@@ -4,20 +4,28 @@ namespace EmediaPng
 {
     public abstract class Chunk
     {
-        public Chunk(byte[] data, byte[] crc)
+        private char[] type;
+
+        public Chunk(char[] type, byte[] data, byte[] crc)
         {
 
         }
+
+        public override string ToString() => new string(type);
 
         public static Chunk Create(char[] type, byte[] data, byte[] crc)
         {
             string sType = new string(type);
             switch (sType)
             {
-                case "IHDR": return new IHDR(data, crc);
-                default: ThrowIfCritical(type); break;
+                case "IHDR": return new IHDR(type, data, crc);
+
+                default:
+                    if (IsCritical(type))
+                        throw new NotImplementedException(sType);
+                    else
+                        return new NotSupportedChunk(type, data, crc);
             }
-            return null;
         }
 
         public static bool IsCritical(char[] type) => char.IsUpper(type[0]);

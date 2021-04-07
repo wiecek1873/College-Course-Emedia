@@ -2,7 +2,7 @@ namespace EmediaPng
 {
     public class IHDR : Chunk
     {
-        public IHDR(byte[] data, byte[] crc) : base(data, crc)
+        public IHDR(char[] type, byte[] data, byte[] crc) : base(type, data, crc)
         {
         }
     }

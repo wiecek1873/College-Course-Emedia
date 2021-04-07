@@ -21,6 +21,14 @@ namespace EmediaPng
             // todo dalsze przetwarzanie
         }
 
+        public void PrintChunks()
+        {
+            foreach (var chunk in chunks)
+            {
+                Console.WriteLine(chunk);
+            }
+        }
+
         public void Dispose()
         {
             fileReader.Close(); // w ostateczności
