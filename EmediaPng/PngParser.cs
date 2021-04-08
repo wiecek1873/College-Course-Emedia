@@ -75,14 +75,7 @@ namespace EmediaPng
 
         private uint ReadUint32()
         {
-            byte[] array = fileReader.ReadBytes(4);
-            uint value = 0;
-            foreach (byte b in array)
-            {
-                value <<= 8;
-                value += (uint) b;
-            }
-            return value;
+            return DataReader.ReadUint32(fileReader.ReadBytes(4));
         }
     }
 }

@@ -6,11 +6,15 @@ namespace EmediaPng
     {
         private char[] type;
         private uint length;
+        private byte[] data;
+        private byte[] crc;
 
         public Chunk(char[] type, uint length, byte[] data, byte[] crc)
         {
             this.type = type;
             this.length = length;
+            this.data = data;
+            this.crc = crc;
         }
 
         public override string ToString() => $"{new string(type)} | {length}";
@@ -33,9 +37,13 @@ namespace EmediaPng
             }
         }
 
+        public bool IsCritical() => IsCritical(type);
+        public bool IsPublic() => IsPublic(type);
+        public bool IsSafeToCopy() => IsSafeToCopy(type);
+
         public static bool IsCritical(char[] type) => char.IsUpper(type[0]);
         public static bool IsPublic(char[] type) => char.IsUpper(type[1]);
-        public static bool SafeToCopy(char[] type) => char.IsLower(type[3]);
+        public static bool IsSafeToCopy(char[] type) => char.IsLower(type[3]);
 
         private static void ThrowIfCritical(char[] type)
         {
@@ -44,6 +52,7 @@ namespace EmediaPng
         }
     }
 
+    // todo
     // public class PLTE : Chunk {}
     // public class IDAT : Chunk {}
     // public class IEND : Chunk {}
