@@ -1,4 +1,3 @@
-using System;
 namespace EmediaPng
 {
 	internal class PLTE : Chunk
