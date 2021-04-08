@@ -9,8 +9,6 @@ namespace EmediaPng
         static void Main(string[] args)
         {
             var png = new PngParser(testFile);
-            png.DebugPrint();
-            Console.WriteLine(png.IsPngFile());
         }
     }
 }
