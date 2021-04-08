@@ -30,9 +30,10 @@ namespace EmediaPng
 				index++;
 			}
 		}
+
 		public override string ToString()
 		{
-			return $"{base.ToString()} | pallets count: {Palettes.Length} | Red : {Palettes[0].Red} | Green : {Palettes[0].Green} | Blue : {Palettes[0].Blue}";
+			return $"{base.ToString()} | pallets count: {Palettes.Length}";
 		}
 	}
 }
