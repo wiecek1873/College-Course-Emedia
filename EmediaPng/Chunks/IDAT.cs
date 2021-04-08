@@ -1,8 +1,8 @@
 namespace EmediaPng
 {
-    internal class IHDR : Chunk
+    internal class IDAT : Chunk
     {
-        public IHDR(char[] type, uint length, byte[] data, byte[] crc) : base(type, length, data, crc)
+        public IDAT(char[] type, uint length, byte[] data, byte[] crc) : base(type, length, data, crc)
         {
         }
     }

@@ -5,26 +5,31 @@ namespace EmediaPng
     public abstract class Chunk
     {
         private char[] type;
+        private uint length;
 
-        public Chunk(char[] type, byte[] data, byte[] crc)
+        public Chunk(char[] type, uint length, byte[] data, byte[] crc)
         {
-
+            this.type = type;
+            this.length = length;
         }
 
-        public override string ToString() => new string(type);
+        public override string ToString() => $"{new string(type)} | {length}";
 
-        public static Chunk Create(char[] type, byte[] data, byte[] crc)
+        public static Chunk Create(char[] type, uint length, byte[] data, byte[] crc)
         {
             string sType = new string(type);
             switch (sType)
             {
-                case "IHDR": return new IHDR(type, data, crc);
+                case "IHDR": return new IHDR(type, length, data, crc);
+                case "IDAT": return new IDAT(type, length, data, crc);
+                case "PLTE": return new PLTE(type, length, data, crc);
+                case "IEND": return new IEND(type, length, data, crc);
 
                 default:
                     if (IsCritical(type))
                         throw new NotImplementedException(sType);
                     else
-                        return new NotSupportedChunk(type, data, crc);
+                        return new NotSupportedChunk(type, length, data, crc);
             }
         }
 

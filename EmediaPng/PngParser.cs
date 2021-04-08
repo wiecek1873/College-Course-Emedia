@@ -51,34 +51,36 @@ namespace EmediaPng
         {
             while (true)
             {
-                uint length = ReadLengthOfChunk();
+                uint length = ReadUint32();
                 char[] type = fileReader.ReadChars(TypeLength);
                 byte[] data = ReadDataOfChunk(length);
                 byte[] crc = fileReader.ReadBytes(CRCLength);
 
-                Chunk newChunk = Chunk.Create(type, data, crc);
+                Chunk newChunk = Chunk.Create(type, length, data, crc);
                 chunks.Add(newChunk);
+                Console.WriteLine(newChunk);
 
-                if (Enumerable.SequenceEqual<char>(type, @"IEND"))
+                if (newChunk is IEND)
                     break;
             }
         }
 
         private byte[] ReadDataOfChunk(uint length)
         {
-            if (length > Int32.MaxValue)
-                throw new NotImplementedException();
-            return fileReader.ReadBytes((int) length);
+            byte[] output = new byte[length];
+            for (uint i = 0; i < length; ++i)
+                output[i] = fileReader.ReadByte();
+            return output;
         }
 
-        private uint ReadLengthOfChunk()
+        private uint ReadUint32()
         {
             byte[] array = fileReader.ReadBytes(4);
             uint value = 0;
-            int shift = 4;
-            foreach (byte a in array)
+            foreach (byte b in array)
             {
-                value += ((uint) a) >> --shift;
+                value <<= 8;
+                value += (uint) b;
             }
             return value;
         }
