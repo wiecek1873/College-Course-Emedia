@@ -19,6 +19,14 @@ namespace EmediaPng
 
 		public override string ToString() => $"{new string(type)} | {length}";
 
+		public bool IsCritical() => IsCritical(type);
+		public bool IsPublic() => IsPublic(type);
+		public bool IsSafeToCopy() => IsSafeToCopy(type);
+
+		public static bool IsCritical(char[] type) => char.IsUpper(type[0]);
+		public static bool IsPublic(char[] type) => char.IsUpper(type[1]);
+		public static bool IsSafeToCopy(char[] type) => char.IsLower(type[3]);
+
 		public static Chunk Create(char[] type, uint length, byte[] data, byte[] crc)
 		{
 			string sType = new string(type);
@@ -45,14 +53,6 @@ namespace EmediaPng
 						return new NotSupportedChunk(type, length, data, crc);
 			}
 		}
-
-		public bool IsCritical() => IsCritical(type);
-		public bool IsPublic() => IsPublic(type);
-		public bool IsSafeToCopy() => IsSafeToCopy(type);
-
-		public static bool IsCritical(char[] type) => char.IsUpper(type[0]);
-		public static bool IsPublic(char[] type) => char.IsUpper(type[1]);
-		public static bool IsSafeToCopy(char[] type) => char.IsLower(type[3]);
 
 		private static void ThrowIfCritical(char[] type)
 		{
