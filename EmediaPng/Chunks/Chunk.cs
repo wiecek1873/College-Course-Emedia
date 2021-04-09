@@ -45,6 +45,7 @@ namespace EmediaPng
 				case "bKGD": return new bKGD(type, length, data, crc);
 				case "tIME": return new tIME(type, length, data, crc);
 				case "tEXt": return new tEXt(type, length, data, crc);
+                case "iTXt": return new iTXt(type, length, data, crc);
 
 				default:
 					if (IsCritical(type))
