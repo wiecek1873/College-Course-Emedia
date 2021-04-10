@@ -5,7 +5,7 @@ namespace EmediaPng
 {
 	class Program
 	{
-
+		private const string clearFilePath = "../../../";
 		private const string examples = "../../../FileExamples/";
 
 		static void Main(string[] args)
@@ -24,6 +24,7 @@ namespace EmediaPng
 			if (0 <= choice && choice < files.Length)
 			{
 				var png = new PngParser(files[choice]);
+				png.SaveCriticalOnly(clearFilePath, "test.png");
 			}
 			else
 				throw new Exception();
