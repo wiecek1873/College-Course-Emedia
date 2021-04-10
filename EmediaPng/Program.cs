@@ -25,6 +25,7 @@ namespace EmediaPng
 			{
 				var png = new PngParser(files[choice]);
 				png.SaveCriticalOnly(clearFilePath, "test.png");
+				png.SaveWithoutMetadata(clearFilePath, "bezMetadanych.png");
 			}
 			else
 				throw new Exception();

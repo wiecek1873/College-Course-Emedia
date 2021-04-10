@@ -78,6 +78,26 @@ namespace EmediaPng
 
 			writer.Close();
 		}
+
+		public void SaveWithoutMetadata(string path, string fileName)
+		{
+			BinaryWriter writer = new BinaryWriter(File.Open(path + fileName, FileMode.Create));
+			writer.Write(PngSignature);
+			foreach (Chunk chunk in chunks)
+			{
+				if (new string(chunk.type) == "pHYs" || new string(chunk.type) == "tIME" || new string(chunk.type) == "tEXt" || new string(chunk.type) == "iTXt")
+					continue;
+				else
+				{
+					writer.Write(BitConverter.GetBytes(chunk.length).Reverse().ToArray());
+					writer.Write(chunk.type);
+					writer.Write(chunk.data);
+					writer.Write(chunk.crc);
+				}
+			}
+			writer.Close();
+		}
+
 		private void AssetPng()
 		{
 			byte[] signature = new byte[8];
