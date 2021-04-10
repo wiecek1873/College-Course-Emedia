@@ -55,7 +55,10 @@ namespace EmediaPng
 			//PLTE
 			if (PLTE != null)
 			{
-
+				writer.Write(BitConverter.GetBytes(PLTE.length).Reverse().ToArray());
+				writer.Write(PLTE.type);
+				writer.Write(PLTE.data);
+				writer.Write(PLTE.crc);
 			}
 
 			//IDAT
