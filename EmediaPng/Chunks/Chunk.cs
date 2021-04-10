@@ -4,15 +4,15 @@ namespace EmediaPng
 {
 	public abstract class Chunk
 	{
-		private char[] type;
-		private uint length;
-		private byte[] data;
-		private byte[] crc;
+		public uint length;
+		public char[] type;
+		public byte[] data;
+		public byte[] crc;
 
 		public Chunk(char[] type, uint length, byte[] data, byte[] crc)
 		{
-			this.type = type;
 			this.length = length;
+			this.type = type;
 			this.data = data;
 			this.crc = crc;
 		}
