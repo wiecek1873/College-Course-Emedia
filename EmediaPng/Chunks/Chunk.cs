@@ -19,6 +19,14 @@ namespace EmediaPng
 
 		public override string ToString() => $"{new string(type)} | {length}";
 
+		public bool IsCritical() => IsCritical(type);
+		public bool IsPublic() => IsPublic(type);
+		public bool IsSafeToCopy() => IsSafeToCopy(type);
+
+		public static bool IsCritical(char[] type) => char.IsUpper(type[0]);
+		public static bool IsPublic(char[] type) => char.IsUpper(type[1]);
+		public static bool IsSafeToCopy(char[] type) => char.IsLower(type[3]);
+
 		public static Chunk Create(char[] type, uint length, byte[] data, byte[] crc)
 		{
 			string sType = new string(type);
@@ -37,6 +45,7 @@ namespace EmediaPng
 				case "bKGD": return new bKGD(type, length, data, crc);
 				case "tIME": return new tIME(type, length, data, crc);
 				case "tEXt": return new tEXt(type, length, data, crc);
+                case "iTXt": return new iTXt(type, length, data, crc);
 
 				default:
 					if (IsCritical(type))
@@ -46,26 +55,10 @@ namespace EmediaPng
 			}
 		}
 
-		public bool IsCritical() => IsCritical(type);
-		public bool IsPublic() => IsPublic(type);
-		public bool IsSafeToCopy() => IsSafeToCopy(type);
-
-		public static bool IsCritical(char[] type) => char.IsUpper(type[0]);
-		public static bool IsPublic(char[] type) => char.IsUpper(type[1]);
-		public static bool IsSafeToCopy(char[] type) => char.IsLower(type[3]);
-
 		private static void ThrowIfCritical(char[] type)
 		{
 			if (IsCritical(type))
 				throw new NotImplementedException(new string(type));
 		}
 	}
-
-	// todo
-	// public class PLTE : Chunk {}
-	// public class IDAT : Chunk {}
-	// public class IEND : Chunk {}
-	// public class tIME : Chunk {}
-	// public class gAMA : Chunk {}
-	// public class cHRM : Chunk {}
 }
