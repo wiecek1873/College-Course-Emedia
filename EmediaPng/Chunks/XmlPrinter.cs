@@ -8,6 +8,7 @@ namespace EmediaPng
         private const string DeepLevelPrefix = "  ";
         private const string NameValueSeparator = " => ";
         private const string ChildPrefix = "> ";
+        private const string AttributePrefix = "  | ";
 
         public static string ParseAndPrint(string Text)
         {
@@ -53,7 +54,7 @@ namespace EmediaPng
             foreach (XmlAttribute att in element.Attributes)
             {
                 if (AttributeFilter(att))
-                    output += $"\n{prefix}| {att.Name} = {att.Value}";
+                    output += $"\n{prefix}{AttributePrefix}{att.Name} = {att.Value}";
             }
             return output;
         }
