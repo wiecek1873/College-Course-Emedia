@@ -1,4 +1,5 @@
 using System.Text;
+using System.Collections.Generic;
 
 namespace EmediaPng
 {
@@ -13,7 +14,12 @@ namespace EmediaPng
 
         public override string ToString()
         {
-            return $"{base.ToString()} | UTF-8 text: {Text}";
+            return $"{base.ToString()} | {PrintXml()}";
+        }
+
+        private string PrintXml()
+        {
+            return XmpPrinter.ParseAndPrint(Text);
         }
     }
 }
