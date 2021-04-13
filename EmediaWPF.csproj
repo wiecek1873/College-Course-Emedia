@@ -81,15 +81,15 @@
     <Compile Include="Chunks\NotSupportedChunk.cs" />
     <Compile Include="Chunks\XmlPrinter.cs" />
     <Compile Include="Console.cs" />
-    <Compile Include="DataReader.cs" />
-    <Compile Include="FileIsNotPngFile.cs" />
+    <Compile Include="Png\DataReader.cs" />
+    <Compile Include="Png\FileIsNotPngFile.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PngParser.cs" />
+    <Compile Include="Png\PngParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

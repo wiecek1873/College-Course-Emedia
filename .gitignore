@@ -5,6 +5,8 @@
 
 # Other patterns
 **_local
+*.png
+!/FileExamples/**.png
 
 # User-specific files
 *.rsuser
