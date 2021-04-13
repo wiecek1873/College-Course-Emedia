@@ -18,6 +18,8 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Button x:Name="PermutationAlgButton" Content="Kliknij tutaj" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="210" Height="36" Click="LoadFile_Click"/>
+        <Button x:Name="PermutationAlgButton" Content="Wybierz plik" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="122" Height="30" Click="LoadFile_Click" Margin="13,5,162,29"/>
+        <Image x:Name="MainImage" HorizontalAlignment="Left" Height="274" Margin="6,42,0,0" Grid.RowSpan="5" VerticalAlignment="Top" Width="287"/>
+        <Image x:Name="FourierImage" HorizontalAlignment="Left" Height="274" Margin="6,42,0,0" Grid.RowSpan="5" VerticalAlignment="Top" Width="287" Grid.Column="1"/>
     </Grid>
 </Window>

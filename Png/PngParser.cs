@@ -18,7 +18,7 @@ namespace EmediaWPF
 			fileReader = new BinaryReader(File.Open(filePath, FileMode.Open));
 			AssetPng();
 			ReadChunks();
-			// todo dalsze przetwarzanie
+			fileReader.Close();
 		}
 
 		public void PrintChunks()
@@ -31,7 +31,6 @@ namespace EmediaWPF
 
 		public void Dispose()
 		{
-			fileReader.Close(); // w ostateczności
 			fileReader.Dispose();
 		}
 

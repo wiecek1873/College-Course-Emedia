@@ -42,6 +42,8 @@ namespace EmediaWPF
 				var png = new PngParser(dlg.FileName);
 				png.SaveCriticalOnly(clearFilePath, "test.png");
 				png.SaveWithoutMetadata(clearFilePath, "bezMetadanych.png");
+				var uri = new Uri(dlg.FileName);
+				MainImage.Source = new BitmapImage(uri);
 			}
 		}
 	}
