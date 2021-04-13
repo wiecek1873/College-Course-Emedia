@@ -43,7 +43,9 @@ namespace EmediaWPF
 				png.SaveCriticalOnly(clearFilePath, "test.png");
 				png.SaveWithoutMetadata(clearFilePath, "bezMetadanych.png");
 				var uri = new Uri(dlg.FileName);
-				MainImage.Source = new BitmapImage(uri);
+				var image = new BitmapImage(uri);
+				MainImage.Source = image;
+				FourierImage.Source = FFT.FastFourierTransform(image);
 			}
 		}
 	}

@@ -46,6 +46,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -90,6 +91,7 @@
     <Compile Include="Chunks\NotSupportedChunk.cs" />
     <Compile Include="Chunks\XmlPrinter.cs" />
     <Compile Include="Console.cs" />
+    <Compile Include="Png\FFT.cs" />
     <Compile Include="Png\DataReader.cs" />
     <Compile Include="Png\FileIsNotPngFile.cs" />
     <Compile Include="MainWindow.xaml.cs">
