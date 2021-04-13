@@ -30,23 +30,19 @@ namespace EmediaWPF
 		private void LoadFile_Click(object sender, RoutedEventArgs e)
 		{
 			ConsoleAllocator.ShowConsoleWindow();
-			string[] files = Directory.GetFiles(examples);
 
-			for (int i = 0; i < files.Length; i++)
-			{
-				Console.Write(i + ": ");
-				Console.WriteLine(files[i].Substring(examples.Length));
-			}
+			Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+			dlg.FileName = "Image"; // Default file name
+			dlg.DefaultExt = ".png"; // Default file extension
 
-			int choice = Convert.ToInt32(Console.ReadLine());
-			if (0 <= choice && choice < files.Length)
+			Nullable<bool> result = dlg.ShowDialog();
+
+			if (result == true)
 			{
-				var png = new PngParser(files[choice]);
+				var png = new PngParser(dlg.FileName);
 				png.SaveCriticalOnly(clearFilePath, "test.png");
 				png.SaveWithoutMetadata(clearFilePath, "bezMetadanych.png");
 			}
-			else
-				throw new Exception();
 		}
 	}
 }
