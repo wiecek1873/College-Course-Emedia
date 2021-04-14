@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EmediaWPF"
         mc:Ignorable="d"
-        Title="PngParser" Height="350" Width="600" ResizeMode="NoResize">
+        Title="PngParser" Height="675" Width="1200" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -18,8 +18,9 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Button x:Name="PermutationAlgButton" Content="Wybierz plik" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="122" Height="30" Click="LoadFile_Click" Margin="13,5,162,29"/>
-        <Image x:Name="MainImage" HorizontalAlignment="Left" Height="274" Margin="6,42,0,0" Grid.RowSpan="5" VerticalAlignment="Top" Width="287"/>
-        <Image x:Name="FourierImage" HorizontalAlignment="Left" Height="274" Margin="6,42,0,0" Grid.RowSpan="5" VerticalAlignment="Top" Width="287" Grid.Column="1"/>
+        <Button x:Name="OpenAndFFTFileButton" Content="FFT" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="40" Click="LoadFile_Click"/>
+        <Button x:Name="OpenAndClearFileButton" Content="Clear" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="40" Click="ClearFile_Click"/>
+        <Image x:Name="MainImage" Grid.RowSpan="4" Grid.Row ="1" Grid.Column ="0" HorizontalAlignment="Center" Height="400" VerticalAlignment="Top" Width="400"/>
+        <Image x:Name="FourierImage" Grid.RowSpan="4" Grid.Row ="1" Grid.Column="1" HorizontalAlignment="Center" Height="400" VerticalAlignment="Top" Width="400" />
     </Grid>
 </Window>

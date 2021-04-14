@@ -48,5 +48,10 @@ namespace EmediaWPF
 				FourierImage.Source = FFT.FastFourierTransform(image);
 			}
 		}
+
+		private void ClearFile_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
 	}
 }
