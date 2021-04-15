@@ -119,7 +119,6 @@ namespace EmediaWPF
 
 				Chunk newChunk = Chunk.Create(type, length, data, crc);
 				chunks.Add(newChunk);
-				Console.WriteLine(newChunk);
 
 				if (newChunk is IEND)
 					break;

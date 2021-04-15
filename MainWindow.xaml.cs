@@ -25,12 +25,11 @@ namespace EmediaWPF
 		public MainWindow()
 		{
 			InitializeComponent();
+			ConsoleAllocator.ShowConsoleWindow();
 		}
 
 		private void LoadFile_Click(object sender, RoutedEventArgs e)
 		{
-			ConsoleAllocator.ShowConsoleWindow();
-
 			Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 			dlg.FileName = "Image"; // Default file name
 			dlg.DefaultExt = ".png"; // Default file extension
@@ -39,9 +38,11 @@ namespace EmediaWPF
 
 			if (result == true)
 			{
+				Console.Clear();
 				var png = new PngParser(dlg.FileName);
-				png.SaveCriticalOnly(clearFilePath, "test.png");
-				png.SaveWithoutMetadata(clearFilePath, "bezMetadanych.png");
+				png.PrintChunks();
+				//png.SaveCriticalOnly(clearFilePath, "test.png");
+				//png.SaveWithoutMetadata(clearFilePath, "bezMetadanych.png");
 				var uri = new Uri(dlg.FileName);
 				var image = new BitmapImage(uri);
 				MainImage.Source = image;
@@ -51,7 +52,25 @@ namespace EmediaWPF
 
 		private void ClearFile_Click(object sender, RoutedEventArgs e)
 		{
+			Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
+			Nullable<bool> result = dlg.ShowDialog();
+
+			if (result == true)
+			{
+				Console.Clear();
+				var png = new PngParser(dlg.FileName);
+				png.PrintChunks();
+				DirectoryInfo di = Directory.CreateDirectory(clearFilePath + "output");
+
+				//png.SaveCriticalOnly(clearFilePath, "test.png");
+				//lub
+				png.SaveWithoutMetadata(clearFilePath + "output/", "Clear_" + System.IO.Path.GetFileName(dlg.FileName));
+				var uri = new Uri(dlg.FileName);
+				var image = new BitmapImage(uri);
+				MainImage.Source = image;
+				FourierImage.Source = FFT.FastFourierTransform(image);
+			}
 		}
 	}
 }
