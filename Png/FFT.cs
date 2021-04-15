@@ -3,6 +3,7 @@ using AForge.Imaging.Filters;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace EmediaWPF
 	{
 		public static BitmapImage FastFourierTransform(BitmapImage image)
 		{
-			Bitmap bitmap = image.ToBitmap().ToSizePowerBy2().ToGrayScale();
+			Bitmap bitmap = image.ToBitmap().ScaleToPowerBy2().ToGrayScale();
 			ComplexImage complexImage = ComplexImage.FromBitmap(bitmap);
 			complexImage.ForwardFourierTransform();
 			return complexImage.ToBitmapImage();
@@ -24,7 +25,7 @@ namespace EmediaWPF
 
 		public static BitmapImage FastFourierTransform(BitmapImage image, out ComplexImage complexImage)
 		{
-			Bitmap bitmap = image.ToBitmap().ToSizePowerBy2().ToGrayScale();
+			Bitmap bitmap = image.ToBitmap().ScaleToPowerBy2().ToGrayScale();
 			complexImage = ComplexImage.FromBitmap(bitmap);
 			complexImage.ForwardFourierTransform();
 			return complexImage.ToBitmapImage();
@@ -92,6 +93,32 @@ namespace EmediaWPF
 			}
 
 			return newBitmap;
+		}
+
+		private static Bitmap ScaleToPowerBy2(this Bitmap thisBitmap)
+		{
+			float width = PowerBy2(thisBitmap.Width);
+			float height = PowerBy2(thisBitmap.Height);
+
+			var brush = new SolidBrush(Color.Black);
+
+			float scale = Math.Min(width / thisBitmap.Width, height / thisBitmap.Height);
+
+			var bmp = new Bitmap((int)width, (int)height);
+			var graph = Graphics.FromImage(bmp);
+
+			// uncomment for higher quality output
+			graph.InterpolationMode = InterpolationMode.High;
+			graph.CompositingQuality = CompositingQuality.HighQuality;
+			graph.SmoothingMode = SmoothingMode.AntiAlias;
+
+			var scaleWidth = (int)(thisBitmap.Width * scale);
+			var scaleHeight = (int)(thisBitmap.Height * scale);
+
+			graph.FillRectangle(brush, new RectangleF(0, 0, width, height));
+			graph.DrawImage(thisBitmap, ((int)width - scaleWidth) / 2, ((int)height - scaleHeight) / 2, scaleWidth, scaleHeight);
+
+			return bmp;
 		}
 
 		private static int PowerBy2(int height)

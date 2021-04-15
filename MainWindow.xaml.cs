@@ -23,7 +23,6 @@ namespace EmediaWPF
 	{
 		ComplexImage complexImage;
 		private const string clearFilePath = "../../";
-		private const string examples = "../../FileExamples/";
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -43,8 +42,6 @@ namespace EmediaWPF
 				Console.Clear();
 				var png = new PngParser(dlg.FileName);
 				png.PrintChunks();
-				//png.SaveCriticalOnly(clearFilePath, "test.png");
-				//png.SaveWithoutMetadata(clearFilePath, "bezMetadanych.png");
 				var uri = new Uri(dlg.FileName);
 				var image = new BitmapImage(uri);
 				MainImage.Source = image;
@@ -73,6 +70,8 @@ namespace EmediaWPF
 				var image = new BitmapImage(uri);
 				MainImage.Source = image;
 				FourierImage.Source = FFT.FastFourierTransform(image);
+
+				Console.WriteLine("Clear file saved at \"output\" directory!");
 			}
 		}
 

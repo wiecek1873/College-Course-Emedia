@@ -11,6 +11,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -20,9 +21,9 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Button x:Name="OpenAndFFTFileButton" Content="FFT" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="40" Click="LoadFile_Click"/>
-        <Button x:Name="BackwardFFTButton" Content="Backward FFT" IsEnabled="False" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="40" Click="BackwardFourierTransform_Click"/>
-        <Button x:Name="OpenAndClearFileButton" Content="Clear" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="40" Click="ClearFile_Click"/>
-        <Image x:Name="MainImage" Grid.RowSpan="4" Grid.Row ="1" Grid.Column ="0" HorizontalAlignment="Center" Height="400" VerticalAlignment="Top" Width="400"/>
-        <Image x:Name="FourierImage" Grid.RowSpan="4" Grid.Row ="1" Grid.Column="2" HorizontalAlignment="Center" Height="400" VerticalAlignment="Top" Width="400" />
+        <Button x:Name="BackwardFFTButton" Content="Backward FFT" IsEnabled="False" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="40" Click="BackwardFourierTransform_Click"/>
+        <Button x:Name="OpenAndClearFileButton" Content="Clear" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="40" Click="ClearFile_Click"/>
+        <Image x:Name="MainImage" Grid.RowSpan="4" Grid.Row ="1" Grid.ColumnSpan="2" Grid.Column ="0" HorizontalAlignment="Center" Height="400" VerticalAlignment="Top" Width="400"/>
+        <Image x:Name="FourierImage" Grid.RowSpan="4" Grid.Row ="1" Grid.ColumnSpan="2" Grid.Column="2" HorizontalAlignment="Center" Height="400" VerticalAlignment="Top" Width="400" />
     </Grid>
 </Window>
