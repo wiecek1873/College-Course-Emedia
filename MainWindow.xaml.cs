@@ -15,11 +15,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
+using AForge.Imaging;
 
 namespace EmediaWPF
 {
 	public partial class MainWindow : Window
 	{
+		ComplexImage complexImage;
 		private const string clearFilePath = "../../";
 		private const string examples = "../../FileExamples/";
 		public MainWindow()
@@ -46,8 +48,9 @@ namespace EmediaWPF
 				var uri = new Uri(dlg.FileName);
 				var image = new BitmapImage(uri);
 				MainImage.Source = image;
-				FourierImage.Source = FFT.FastFourierTransform(image);
+				FourierImage.Source = FFT.FastFourierTransform(image, out complexImage);
 			}
+			BackwardFFTButton.IsEnabled = true;
 		}
 
 		private void ClearFile_Click(object sender, RoutedEventArgs e)
@@ -71,6 +74,11 @@ namespace EmediaWPF
 				MainImage.Source = image;
 				FourierImage.Source = FFT.FastFourierTransform(image);
 			}
+		}
+
+		private void BackwardFourierTransform_Click(object sender, RoutedEventArgs e)
+		{
+			FourierImage.Source = FFT.BackwardFourierTransform(complexImage);
 		}
 	}
 }
