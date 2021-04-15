@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+
 namespace EmediaWPF
 {
 	public class PngParser : IDisposable
@@ -16,7 +16,7 @@ namespace EmediaWPF
 		public PngParser(string filePath)
 		{
 			fileReader = new BinaryReader(File.Open(filePath, FileMode.Open));
-			AssetPng();
+			AssertPng();
 			ReadChunks();
 			fileReader.Close();
 		}
@@ -97,7 +97,7 @@ namespace EmediaWPF
 			writer.Close();
 		}
 
-		private void AssetPng()
+		private void AssertPng()
 		{
 			byte[] signature = new byte[8];
 			for (int i = 0; i < 8; i++)
