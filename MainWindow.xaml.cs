@@ -8,8 +8,10 @@ namespace EmediaWPF
 {
 	public partial class MainWindow : Window
 	{
+		private string imageName;
 		private ComplexImage complexImage;
 		private const string clearFilePath = "../../";
+		private bool Debug = true;
 
 		public MainWindow()
 		{
@@ -27,14 +29,19 @@ namespace EmediaWPF
 
 			if (result == true)
 			{
-				Console.Clear();
+				imageName = dlg.FileName;
 				var png = new PngParser(dlg.FileName);
-				png.PrintChunks();
+				if (!Debug)
+				{
+					Console.Clear();
+					png.PrintChunks();
+				}
 				var uri = new Uri(dlg.FileName);
 				var image = new BitmapImage(uri);
 				MainImage.Source = image;
 				FourierImage.Source = FFT.FastFourierTransform(image, out complexImage);
 			}
+			PhaseFFTButton.IsEnabled = true;
 			BackwardFFTButton.IsEnabled = true;
 		}
 
@@ -46,9 +53,13 @@ namespace EmediaWPF
 
 			if (result == true)
 			{
-				Console.Clear();
+				imageName = dlg.FileName;
 				var png = new PngParser(dlg.FileName);
-				png.PrintChunks();
+				if (!Debug)
+				{
+					Console.Clear();
+					png.PrintChunks();
+				}
 				DirectoryInfo di = Directory.CreateDirectory(clearFilePath + "output");
 
 				//png.SaveCriticalOnly(clearFilePath, "test.png");
@@ -59,6 +70,7 @@ namespace EmediaWPF
 				MainImage.Source = image;
 				FourierImage.Source = FFT.FastFourierTransform(image);
 
+				if(!Debug)
 				Console.WriteLine("Clear file saved at \"output\" directory!");
 			}
 		}
@@ -66,6 +78,11 @@ namespace EmediaWPF
 		private void BackwardFourierTransform_Click(object sender, RoutedEventArgs e)
 		{
 			FourierImage.Source = FFT.BackwardFourierTransform(complexImage);
+		}
+
+		private void FourierTransformPhase_Click(object sender, RoutedEventArgs e)
+		{
+			FourierImage.Source = FFT.FromFourierToPhase(complexImage, imageName);
 		}
 	}
 }

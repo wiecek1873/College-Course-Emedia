@@ -27,6 +27,37 @@ namespace EmediaWPF
 			return complexImage.ToBitmapImage();
 		}
 
+		public static BitmapImage FromFourierToPhase(this ComplexImage complexImage, string fileName)
+		{
+			Bitmap bitmap = new Bitmap(fileName).ScaleToPowerBy2();
+
+			for (int i = 0; i < complexImage.Height; i++)
+			{
+				for (int j = 0; j < complexImage.Width; j++)
+				{
+					double phase = complexImage.Data[i, j].Phase; //Bierzemy faze w radianach czyli od -PI(-3.14) do +PI(3.14)
+					phase = phase + Math.PI; //Dodajemy PI żeby zakres był od PI do 2Pi
+					bitmap.SetPixel(j, i, ColorLerp(Color.White,Color.Black, (float)(phase / (2*Math.PI))));
+				}
+			}
+
+
+			using (var memory = new MemoryStream())
+			{
+				bitmap.Save(memory, ImageFormat.Png);
+				memory.Position = 0;
+
+				var bitmapImage = new BitmapImage();
+				bitmapImage.BeginInit();
+				bitmapImage.StreamSource = memory;
+				bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+				bitmapImage.EndInit();
+				bitmapImage.Freeze();
+
+				return bitmapImage;
+			}
+		}
+
 		public static BitmapImage BackwardFourierTransform(ComplexImage image)
 		{
 			image.BackwardFourierTransform();
@@ -125,6 +156,19 @@ namespace EmediaWPF
 				pow *= 2;
 			}
 			return pow;
+		}
+
+		private static Color ColorLerp(Color firstColor, Color secondsColor, float by)
+		{
+			int R = (int)Lerp(firstColor.R, secondsColor.R, by);
+			int G = (int)Lerp(firstColor.G, secondsColor.G, by);
+			int B = (int)Lerp(firstColor.B, secondsColor.B, by);
+			return Color.FromArgb(R, G, B);
+		}
+
+		private static float Lerp(float firstFloat, float secondFloat, float by)
+		{
+			return firstFloat * (1 - by) + secondFloat * by;
 		}
 	}
 
