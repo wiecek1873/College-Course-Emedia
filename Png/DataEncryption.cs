@@ -22,6 +22,7 @@ namespace EmediaWPF
 			Console.WriteLine(PrimeNumbers.NextPrime(2));
 			Console.WriteLine(PrimeNumbers.NextPrime(3));
 			Console.WriteLine(PrimeNumbers.NextPrime(43243));
+
 		}
 
 

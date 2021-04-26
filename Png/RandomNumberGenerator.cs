@@ -40,6 +40,12 @@ namespace EmediaWPF
 			return BitConverter.ToUInt32(randomBytes, 0);
 		}
 
+		public BigInteger GetRandomNumber(int bytesLength)
+		{
+			var randomBytes = GenerateRandomBytes(bytesLength);
+			return new BigInteger(randomBytes);
+		}
+
 		private byte[] GenerateRandomBytes(int bytesNumber)
 		{
 			byte[] buffer = new byte[bytesNumber];
