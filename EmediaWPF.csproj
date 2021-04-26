@@ -47,6 +47,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -91,6 +92,7 @@
     <Compile Include="Chunks\NotSupportedChunk.cs" />
     <Compile Include="Chunks\XmlPrinter.cs" />
     <Compile Include="Console.cs" />
+    <Compile Include="Png\DataEncryption.cs" />
     <Compile Include="Png\FFT.cs" />
     <Compile Include="Png\DataReader.cs" />
     <Compile Include="Png\FileIsNotPngFile.cs" />
@@ -101,6 +103,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Png\PngParser.cs" />
+    <Compile Include="Png\PrimeNumbers.cs" />
+    <Compile Include="Png\RandomNumberGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

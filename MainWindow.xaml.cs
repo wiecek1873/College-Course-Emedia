@@ -21,28 +21,30 @@ namespace EmediaWPF
 
 		private void LoadFile_Click(object sender, RoutedEventArgs e)
 		{
-			Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-			dlg.FileName = "Image"; // Default file name
-			dlg.DefaultExt = ".png"; // Default file extension
+			DataEncryption dataEncryption = new DataEncryption();
+			dataEncryption.Run();
+			//Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+			//dlg.FileName = "Image"; // Default file name
+			//dlg.DefaultExt = ".png"; // Default file extension
 
-			Nullable<bool> result = dlg.ShowDialog();
+			//Nullable<bool> result = dlg.ShowDialog();
 
-			if (result == true)
-			{
-				imageName = dlg.FileName;
-				var png = new PngParser(dlg.FileName);
-				if (!Debug)
-				{
-					Console.Clear();
-					png.PrintChunks();
-				}
-				var uri = new Uri(dlg.FileName);
-				var image = new BitmapImage(uri);
-				MainImage.Source = image;
-				FourierImage.Source = FFT.FastFourierTransform(image, out complexImage);
-			}
-			PhaseFFTButton.IsEnabled = true;
-			BackwardFFTButton.IsEnabled = true;
+			//if (result == true)
+			//{
+			//	imageName = dlg.FileName;
+			//	var png = new PngParser(dlg.FileName);
+			//	if (!Debug)
+			//	{
+			//		Console.Clear();
+			//		png.PrintChunks();
+			//	}
+			//	var uri = new Uri(dlg.FileName);
+			//	var image = new BitmapImage(uri);
+			//	MainImage.Source = image;
+			//	FourierImage.Source = FFT.FastFourierTransform(image, out complexImage);
+			//}
+			//PhaseFFTButton.IsEnabled = true;
+			//BackwardFFTButton.IsEnabled = true;
 		}
 
 		private void ClearFile_Click(object sender, RoutedEventArgs e)
