@@ -18,23 +18,18 @@ namespace EmediaWPF
 			rngCsp = new RNGCryptoServiceProvider();
 		}
 
-		public int Next(int minValue, int maxExclusiveValue)
+		//todo nie wiem jak to zrobic, zeby w jakimś zasiegu dawało liczbe
+		public BigInteger Next(int bytesLength, BigInteger minValue, BigInteger maxExclusiveValue)
 		{
-			if (minValue >= maxExclusiveValue)
-				throw new ArgumentOutOfRangeException("minValue must be lower than maxExclusiveValue");
+			if (minValue > maxExclusiveValue)
+				throw new Exception();
 
-			long diff = (long)maxExclusiveValue - minValue;
-			long upperBound = uint.MaxValue / diff * diff;
+			BigInteger value = GetRandomNumber(bytesLength);
 
-			uint ui;
-			do
-			{
-				ui = GetRandomUInt();
-			} while (ui >= upperBound);
-			return (int)(minValue + (ui % diff));
+			return value 
 		}
 
-		private uint GetRandomUInt()
+	    public uint GetRandomUInt()
 		{
 			var randomBytes = GenerateRandomBytes(sizeof(uint));
 			return BitConverter.ToUInt32(randomBytes, 0);
