@@ -48,12 +48,20 @@ namespace EmediaWPF
 			e = 834781;
 
 			d = ExtendedEuclideanAlgorithm(e, totient);
+
+			int data = 9910;
+			var dataAsBytes = BitConverter.GetBytes(data);
+			Console.WriteLine(data);
+			Console.WriteLine(string.Join(" ",dataAsBytes));
+			var encryptedData = Encrypt(dataAsBytes, e, n);
+			Console.WriteLine(string.Join(" ", encryptedData));
+			Console.WriteLine(string.Join(" " ,Decrypt(encryptedData, d, n)));
 		}
 
 		private byte[] Encrypt(byte[] data, BigInteger e, BigInteger n)
 		{
 			BigInteger dataAsNumber = new BigInteger(data);
-			return BigInteger.ModPow(dataAsNumber, d, n).ToByteArray();
+			return BigInteger.ModPow(dataAsNumber, e, n).ToByteArray();
 		}
 
 		private byte[] Decrypt(byte[] encryptedData, BigInteger d, BigInteger n)
