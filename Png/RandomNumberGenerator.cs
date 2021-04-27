@@ -24,12 +24,16 @@ namespace EmediaWPF
 			if (minValue > maxExclusiveValue)
 				throw new Exception();
 
-			BigInteger value = GetRandomNumber(bytesLength);
+			BigInteger value;
+			do
+			{
+				value = GetRandomNumber(bytesLength);
+			} while (value < minValue || maxExclusiveValue <= value);
 
-			return value 
+			return value;
 		}
 
-	    public uint GetRandomUInt()
+		public uint GetRandomUInt()
 		{
 			var randomBytes = GenerateRandomBytes(sizeof(uint));
 			return BitConverter.ToUInt32(randomBytes, 0);
@@ -47,6 +51,7 @@ namespace EmediaWPF
 			rngCsp.GetBytes(buffer);
 			return buffer;
 		}
+
 
 	}
 }
