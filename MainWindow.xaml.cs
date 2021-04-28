@@ -23,24 +23,12 @@ namespace EmediaWPF
 		private void LoadFile_Click(object sender, RoutedEventArgs e)
 		{
 			DataEncryption dataEncryption = new DataEncryption();
-			BigInteger i = 0;
-			while(i < 1000000000)
-			{
-				var enc = dataEncryption.Encrypt(i.ToByteArray());
+			byte[] data = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 , 16 };
+			var enc = dataEncryption.EncryptData(data);
+			var dec = dataEncryption.DecryptData(enc);
 
-				var dec = dataEncryption.Decrypt(enc);
-
-				if (new BigInteger(dec) != i)
-					Console.WriteLine("Błąd dla i = " + i);
-				if (i % 1000000 == 0)
-				{
-					Console.Write("Value: " + i);
-					Console.Write(" EncValue: " + new BigInteger(enc));
-					Console.WriteLine(" DecValue: " + new BigInteger(dec));
-				}
-				i++;
-
-			}
+				Console.WriteLine(string.Join(" ",data));
+				Console.WriteLine(string.Join(" ",dec));
 			//Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 			//dlg.FileName = "Image"; // Default file name
 			//dlg.DefaultExt = ".png"; // Default file extension
