@@ -18,56 +18,93 @@ namespace EmediaWPF
 		BigInteger totient; //To jest to przekreślone o
 		BigInteger e;
 		BigInteger d;
-		BigInteger c;
 
 		public DataEncryption()
 		{
 			rng = new RandomNumberGenerator();
-		}
-
-		public void Run()
-		{
 			PrepareKeys();
-
 		}
+
+		//public byte[] EncryptData(byte[] chunkData)
+		//{
+		//	int keyLegth = n.ToByteArray().Length;
+		//	int iterator = 0;
+		//	List<byte> partToEncrypt = new List<byte>();
+		//	List<byte> encryptedData = new List<byte>();
+		//	foreach (byte byteOfData in chunkData)
+		//	{
+		//		partToEncrypt.Add(byteOfData);
+		//		iterator++;
+		//		if (iterator == keyLegth)
+		//		{
+
+		//			encryptedData.AddRange(Decrypt(partToEncrypt.ToArray()));
+		//			partToEncrypt.Clear();
+		//			iterator = 0;
+		//		}
+		//	}
+		//	if (partToEncrypt.Count > 0)
+		//	{
+		//		encryptedData.AddRange(Encrypt(partToEncrypt.ToArray()));
+		//		partToEncrypt.Clear();
+		//	}
+		//	return encryptedData.ToArray();
+		//}
+
+		//public byte[] DecryptData(byte[] chunkData)
+		//{
+		//	int keyLegth = n.ToByteArray().Length;
+		//	int iterator = 0;
+		//	List<byte> partToDecrypt = new List<byte>();
+		//	List<byte> decryptedData = new List<byte>();
+		//	foreach (byte byteOfData in chunkData)
+		//	{
+		//		partToDecrypt.Add(byteOfData);
+		//		iterator++;
+		//		if (iterator == keyLegth)
+		//		{
+		//			decryptedData.AddRange(Decrypt(partToDecrypt.ToArray()));
+		//			partToDecrypt.Clear();
+		//			iterator = 0;
+		//		}
+		//	}
+		//	if (partToDecrypt.Count > 0)
+		//	{
+		//		decryptedData.AddRange(Decrypt(partToDecrypt.ToArray()));
+		//		partToDecrypt.Clear();
+		//	}
+		//	return decryptedData.ToArray();
+		//}
 
 		private void PrepareKeys()
 		{
-			p = 1123;
-			q = 1237;
-			//p = PrimeNumbers.NextPrime(rng.Next(2, 3, 999999999));
-			//q = PrimeNumbers.NextPrime(rng.Next(2, 3, 999999999));
+			p = PrimeNumbers.NextPrime(rng.Next(2, 1000, 999999999));
+			q = PrimeNumbers.NextPrime(rng.Next(2, 1000, 999999999));
 			n = p * q;
 			totient = (p - 1) * (q - 1);
 
 			do
 			{
-				e = rng.Next(2, 3, totient);
+				e = rng.Next(2, 1000, totient);
 			} while (!PrimeNumbers.AreCoPrime(e, totient));
 
 			e = 834781;
 
 			d = ExtendedEuclideanAlgorithm(e, totient);
-
-			int data = 9910;
-			var dataAsBytes = BitConverter.GetBytes(data);
-			Console.WriteLine(data);
-			Console.WriteLine(string.Join(" ",dataAsBytes));
-			var encryptedData = Encrypt(dataAsBytes, e, n);
-			Console.WriteLine(string.Join(" ", encryptedData));
-			Console.WriteLine(string.Join(" " ,Decrypt(encryptedData, d, n)));
 		}
 
-		private byte[] Encrypt(byte[] data, BigInteger e, BigInteger n)
+		public byte[] Encrypt(byte[] data)
 		{
 			BigInteger dataAsNumber = new BigInteger(data);
-			return BigInteger.ModPow(dataAsNumber, e, n).ToByteArray();
+			var encryptedData = BigInteger.ModPow(dataAsNumber, e, n).ToByteArray().ToList();
+			return encryptedData.ToArray();
 		}
 
-		private byte[] Decrypt(byte[] encryptedData, BigInteger d, BigInteger n)
+		public byte[] Decrypt(byte[] encryptedData)
 		{
 			BigInteger encryptedDataAsNumber = new BigInteger(encryptedData);
-			return BigInteger.ModPow(encryptedDataAsNumber, d, n).ToByteArray();
+			var decryptedData = BigInteger.ModPow(encryptedDataAsNumber, d, n).ToByteArray().ToList();
+			return decryptedData.ToArray();
 		}
 
 		private BigInteger ExtendedEuclideanAlgorithm(BigInteger e, BigInteger totient)

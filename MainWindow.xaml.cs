@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using AForge.Imaging;
@@ -22,7 +23,24 @@ namespace EmediaWPF
 		private void LoadFile_Click(object sender, RoutedEventArgs e)
 		{
 			DataEncryption dataEncryption = new DataEncryption();
-			dataEncryption.Run();
+			BigInteger i = 0;
+			while(i < 1000000000)
+			{
+				var enc = dataEncryption.Encrypt(i.ToByteArray());
+
+				var dec = dataEncryption.Decrypt(enc);
+
+				if (new BigInteger(dec) != i)
+					Console.WriteLine("Błąd dla i = " + i);
+				if (i % 1000000 == 0)
+				{
+					Console.Write("Value: " + i);
+					Console.Write(" EncValue: " + new BigInteger(enc));
+					Console.WriteLine(" DecValue: " + new BigInteger(dec));
+				}
+				i++;
+
+			}
 			//Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 			//dlg.FileName = "Image"; // Default file name
 			//dlg.DefaultExt = ".png"; // Default file extension
@@ -72,8 +90,8 @@ namespace EmediaWPF
 				MainImage.Source = image;
 				FourierImage.Source = FFT.FastFourierTransform(image);
 
-				if(!Debug)
-				Console.WriteLine("Clear file saved at \"output\" directory!");
+				if (!Debug)
+					Console.WriteLine("Clear file saved at \"output\" directory!");
 			}
 		}
 
