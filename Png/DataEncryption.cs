@@ -49,7 +49,7 @@ namespace EmediaWPF
 						xd.Add(0);
 					}
 
-					Console.WriteLine("Zaszyfrowane bajty: " + string.Join(" ", xd) + " A jako big int: " + new BigInteger(xd.ToArray()));
+					//Console.WriteLine("Zaszyfrowane bajty: " + string.Join(" ", xd) + " A jako big int: " + new BigInteger(xd.ToArray()));
 					encryptedData.AddRange(xd);
 					partToEncrypt.Clear();
 				}
@@ -63,7 +63,7 @@ namespace EmediaWPF
 				{
 					xd.Add(0);
 				}
-				Console.WriteLine("Zaszyfrowane bajty: " + string.Join(" ", xd) + " A jako big int: " + new BigInteger(xd.ToArray()));
+				//Console.WriteLine("Zaszyfrowane bajty: " + string.Join(" ", xd) + " A jako big int: " + new BigInteger(xd.ToArray()));
 				encryptedData.AddRange(xd);
 				partToEncrypt.Clear();
 			}
@@ -81,7 +81,7 @@ namespace EmediaWPF
 				if (partToDecrypt.Count == keyLegth)
 				{
 
-					Console.WriteLine("Deszyfrowane bajty: " + string.Join(" ", partToDecrypt) + " A jako big int: " + new BigInteger(partToDecrypt.ToArray()));
+					//Console.WriteLine("Deszyfrowane bajty: " + string.Join(" ", partToDecrypt) + " A jako big int: " + new BigInteger(partToDecrypt.ToArray()));
 					decryptedData.AddRange(Decrypt(partToDecrypt.ToArray()));
 					partToDecrypt.Clear();
 				}
@@ -115,8 +115,6 @@ namespace EmediaWPF
 				e = rng.Next(2, 1000, totient);
 			} while (!PrimeNumbers.AreCoPrime(e, totient));
 
-			e = 834781;
-
 			d = ExtendedEuclideanAlgorithm(e, totient);
 		}
 
@@ -129,6 +127,7 @@ namespace EmediaWPF
 				k++;
 				value = (1 + k * totient) % e;
 			} while (value != 0);
+			Console.WriteLine("k: " + k);
 			return (1 + k * totient) / e;
 		}
 
