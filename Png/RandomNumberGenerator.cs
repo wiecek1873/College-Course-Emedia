@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using Extreme.Mathematics;
 
-
 namespace EmediaWPF
 {
 	public class RandomNumberGenerator
@@ -51,7 +50,5 @@ namespace EmediaWPF
 			rngCsp.GetBytes(buffer);
 			return buffer;
 		}
-
-
 	}
 }

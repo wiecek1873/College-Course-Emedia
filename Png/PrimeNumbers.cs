@@ -4,13 +4,13 @@ namespace EmediaWPF
 {
     class PrimeNumbers
     {
-        public static int NextPrime(int N) => PrimeNumbers.NextPrime(N);
-        public static BigInteger NextPrime(BigInteger N) => PrimeNumbers.NextPrime(N);
-        public static int PreviousPrime(int N) => PrimeNumbers.PreviousPrime(N);
-        public static BigInteger PreviousPrime(BigInteger N) => PrimeNumbers.PreviousPrime(N);
+        public static int NextPrime(int N) => IntegerMath.NextPrime(N);
+        public static BigInteger NextPrime(BigInteger N) => IntegerMath.NextPrime((int)N);
+        public static int PreviousPrime(int N) => IntegerMath.PreviousPrime(N);
+        public static BigInteger PreviousPrime(BigInteger N) => IntegerMath.PreviousPrime((int)N);
         public static bool AreCoPrime(BigInteger a, BigInteger b) => (GreatestCommonDivisor(a, b) == 1);
-        private static BigInteger GreatestCommonDivisor(BigInteger a, BigInteger b) => PrimeNumbers.GreatestCommonDivisor(a, b);
-        private static bool IsPrime(int n) => PrimeNumbers.IsPrime(n);
-        private static bool IsPrime(BigInteger n) => PrimeNumbers.IsPrime(n);
+        private static BigInteger GreatestCommonDivisor(BigInteger a, BigInteger b) => IntegerMath.GreatestCommonDivisor(a, b);
+        private static bool IsPrime(int n) => IntegerMath.IsPrime(n);
+        private static bool IsPrime(BigInteger n) => IntegerMath.IsPrime((int)n);
     }
 }

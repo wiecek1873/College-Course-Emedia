@@ -32,7 +32,7 @@ namespace EmediaWPF
             Bitmap bitmap = new Bitmap(fileName).ScaleToPowerBy2();
 
             for (int i = 0; i < complexImage.Height; i++)
-            {	
+            {
                 for (int j = 0; j < complexImage.Width; j++)
                 {
                     double phase = complexImage.Data[i, j].Phase; //Bierzemy faze w radianach czyli od -PI(-3.14) do +PI(3.14)
