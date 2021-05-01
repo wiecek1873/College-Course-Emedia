@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Numerics;
 using System.Security.Cryptography;
+using Extreme.Mathematics;
 
 namespace EmediaWPF
 {
@@ -92,13 +92,13 @@ namespace EmediaWPF
 		public byte[] Encrypt(byte[] data)
 		{
 			BigInteger dataAsNumber = new BigInteger(data);
-			return BigInteger.ModPow(dataAsNumber, e, n).ToByteArray();
+			return BigInteger.ModularPow(dataAsNumber, e, n).ToByteArray();
 		}
 
 		public byte[] Decrypt(byte[] encryptedData)
 		{
 			BigInteger encryptedDataAsNumber = new BigInteger(encryptedData);
-			return BigInteger.ModPow(encryptedDataAsNumber, d, n).ToByteArray();
+			return BigInteger.ModularPow(encryptedDataAsNumber, d, n).ToByteArray();
 		}
 
 		private void PrepareKeys()
@@ -124,7 +124,7 @@ namespace EmediaWPF
 			BigInteger value;
 			do
 			{
-				k++;
+				k += 1;
 				value = (1 + k * totient) % e;
 			} while (value != 0);
 			Console.WriteLine("k: " + k);
