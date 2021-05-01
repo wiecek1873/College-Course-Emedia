@@ -45,7 +45,7 @@ namespace EmediaWPF
 			return new BigInteger(randomBytes);
 		}
 
-		private byte[] GenerateRandomBytes(int bytesNumber)
+		public byte[] GenerateRandomBytes(int bytesNumber)
 		{
 			byte[] buffer = new byte[bytesNumber];
 			rngCsp.GetBytes(buffer);

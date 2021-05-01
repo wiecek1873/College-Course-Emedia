@@ -27,25 +27,44 @@ namespace EmediaWPF
 
 		public byte[] EncryptData(byte[] chunkData)
 		{
+			Console.WriteLine("p: " + p);
+			Console.WriteLine("q: " + q);
 			Console.WriteLine("n: " + n);
-			int keyLegth = n.ToByteArray().Length;
-			int iterator = 0;
+			Console.WriteLine("totient: " + totient);
+			Console.WriteLine("e: " + e);
+			Console.WriteLine("d: " + d);
+			Console.WriteLine();
+			int keyLegth = n.ToByteArray().Length - 1;
 			List<byte> partToEncrypt = new List<byte>();
 			List<byte> encryptedData = new List<byte>();
 			foreach (byte byteOfData in chunkData)
 			{
 				partToEncrypt.Add(byteOfData);
-				iterator++;
-				if (iterator == keyLegth)
+				if (partToEncrypt.Count == keyLegth)
 				{
-					encryptedData.AddRange(Encrypt(partToEncrypt.ToArray()));
+
+					var xd = Encrypt(partToEncrypt.ToArray()).ToList();
+					while (xd.Count < n.ToByteArray().Length)
+					{
+						xd.Add(0);
+					}
+
+					Console.WriteLine("Zaszyfrowane bajty: " + string.Join(" ", xd) + " A jako big int: " + new BigInteger(xd.ToArray()));
+					encryptedData.AddRange(xd);
 					partToEncrypt.Clear();
-					iterator = 0;
 				}
 			}
 			if (partToEncrypt.Count > 0)
 			{
-				encryptedData.AddRange(Encrypt(partToEncrypt.ToArray()));
+
+
+				var xd = Encrypt(partToEncrypt.ToArray()).ToList();
+				while (xd.Count < n.ToByteArray().Length)
+				{
+					xd.Add(0);
+				}
+				Console.WriteLine("Zaszyfrowane bajty: " + string.Join(" ", xd) + " A jako big int: " + new BigInteger(xd.ToArray()));
+				encryptedData.AddRange(xd);
 				partToEncrypt.Clear();
 			}
 			return encryptedData.ToArray();
@@ -54,24 +73,18 @@ namespace EmediaWPF
 		public byte[] DecryptData(byte[] chunkData)
 		{
 			int keyLegth = n.ToByteArray().Length;
-			int iterator = 0;
 			List<byte> partToDecrypt = new List<byte>();
 			List<byte> decryptedData = new List<byte>();
 			foreach (byte byteOfData in chunkData)
 			{
 				partToDecrypt.Add(byteOfData);
-				iterator++;
-				if (iterator == keyLegth)
+				if (partToDecrypt.Count == keyLegth)
 				{
+
+					Console.WriteLine("Deszyfrowane bajty: " + string.Join(" ", partToDecrypt) + " A jako big int: " + new BigInteger(partToDecrypt.ToArray()));
 					decryptedData.AddRange(Decrypt(partToDecrypt.ToArray()));
 					partToDecrypt.Clear();
-					iterator = 0;
 				}
-			}
-			if (partToDecrypt.Count > 0)
-			{
-				decryptedData.AddRange(Decrypt(partToDecrypt.ToArray()));
-				partToDecrypt.Clear();
 			}
 			return decryptedData.ToArray();
 		}
@@ -79,14 +92,12 @@ namespace EmediaWPF
 		public byte[] Encrypt(byte[] data)
 		{
 			BigInteger dataAsNumber = new BigInteger(data);
-			Console.WriteLine("Encrypted data: " + dataAsNumber);
 			return BigInteger.ModPow(dataAsNumber, e, n).ToByteArray();
 		}
 
 		public byte[] Decrypt(byte[] encryptedData)
 		{
 			BigInteger encryptedDataAsNumber = new BigInteger(encryptedData);
-			Console.WriteLine("Decrypted data: " + encryptedDataAsNumber);
 			return BigInteger.ModPow(encryptedDataAsNumber, d, n).ToByteArray();
 		}
 

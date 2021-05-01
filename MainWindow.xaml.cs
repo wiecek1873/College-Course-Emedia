@@ -4,6 +4,9 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using AForge.Imaging;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EmediaWPF
 {
@@ -22,13 +25,27 @@ namespace EmediaWPF
 
 		private void LoadFile_Click(object sender, RoutedEventArgs e)
 		{
-			DataEncryption dataEncryption = new DataEncryption();
-			byte[] data = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 , 16 };
-			var enc = dataEncryption.EncryptData(data);
-			var dec = dataEncryption.DecryptData(enc);
+			RandomNumberGenerator randomNumberGenerator = new RandomNumberGenerator();
+			Random rng = new Random();
+			for (int i = 0; i < 1000000; i++)
+			{
+				DataEncryption dataEncryption = new DataEncryption();
+				byte[] data = randomNumberGenerator.GenerateRandomBytes(rng.Next(1, 15));
+				var enc = dataEncryption.EncryptData(data);
+				var dec = dataEncryption.DecryptData(enc);
 
-				Console.WriteLine(string.Join(" ",data));
-				Console.WriteLine(string.Join(" ",dec));
+				if (!data.SequenceEqual(dec))
+				{
+					Console.WriteLine("Błąd dla i : " + i);
+					Console.WriteLine("Data: " + string.Join(" ", data));
+					Console.WriteLine("Enc: " + string.Join(" ", enc));
+					Console.WriteLine("Dec: " + string.Join(" ", dec));
+				}
+				else if (i % 100 == 0)
+					Console.WriteLine("Jesteśmy na i: " + i);
+			}
+
+
 			//Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 			//dlg.FileName = "Image"; // Default file name
 			//dlg.DefaultExt = ".png"; // Default file extension
