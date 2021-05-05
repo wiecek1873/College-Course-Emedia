@@ -45,6 +45,7 @@ namespace EmediaWPF
 
 			//Signature
 			writer.Write(PngSignature);
+			
 			//IHDR
 			writer.Write(BitConverter.GetBytes(IHDR.length).Reverse().ToArray());
 			writer.Write(IHDR.type);

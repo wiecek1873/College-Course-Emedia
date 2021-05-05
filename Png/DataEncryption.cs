@@ -56,6 +56,7 @@ namespace EmediaWPF
 					partToEncrypt.Clear();
 				}
 			}
+			
 			if (partToEncrypt.Count > 0)
 			{
 				var xd = Encrypt(partToEncrypt.ToArray()).ToList();
