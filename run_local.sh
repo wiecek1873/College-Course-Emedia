@@ -1,4 +1,4 @@
 # dotnet build
-cd bin/Debug/
+cd bin/Release/
 ./EmediaWPF.exe
 cd ../..
