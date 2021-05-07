@@ -7,7 +7,7 @@ namespace EmediaWPF
 {
     public class PngParser : IDisposable
     {
-        private byte[] PngSignature = { 137, 80, 78, 71, 13, 10, 26, 10 };
+        private static readonly byte[] PngSignature = { 137, 80, 78, 71, 13, 10, 26, 10 };
         private readonly List<Chunk> chunks = new List<Chunk>();
         private const int TypeLength = 4;
         private const int CRCLength = 4;
@@ -94,24 +94,10 @@ namespace EmediaWPF
             writer.Write(PngSignature);
             foreach (Chunk chunk in chunks)
             {
-                if (new string(chunk.type) == "pHYs" || new string(chunk.type) == "tIME" || new string(chunk.type) == "tEXt" || new string(chunk.type) == "iTXt")
-                    continue;
-                else
-                {
-                    writer.WriteChunk(chunk);
-                }
+                writer.WriteChunk(chunk);
+                // todo szyfrkowanie
             }
             writer.Close();
-        }
-
-        public PngParser GetEncrypted()
-        {
-            throw new NotImplementedException();
-        }
-
-        public PngParser GetDecrypted()
-        {
-            throw new NotImplementedException();
         }
 
         private void AssertPng()
@@ -150,6 +136,11 @@ namespace EmediaWPF
         private List<Chunk> GetChunks(Type type)
         {
             return chunks.FindAll(chunk => chunk.GetType() == type);
+        }
+
+        private Chunk GetChunk(Type type)
+        {
+            return chunks.Find(chunk => chunk.GetType() == type);
         }
 
         private void InsertChunks(List<Chunk> newChunks)
