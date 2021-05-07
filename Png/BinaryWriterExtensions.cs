@@ -13,5 +13,13 @@ namespace EmediaWPF
         {
             writer.Write(BitConverter.GetBytes(number).Reverse().ToArray());
         }
+
+        public static void WriteChunk(this BinaryWriter writer, Chunk chunk)
+        {
+            writer.WriteUlong(chunk.length);
+            writer.Write(chunk.type);
+            writer.Write(chunk.data);
+            writer.Write(chunk.crc);
+        }
     }
 }

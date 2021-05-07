@@ -40,43 +40,36 @@ namespace EmediaWPF
 
             IHDR IHDR = chunks.Find(chunk => new string(chunk.type) == "IHDR") as IHDR;
             PLTE PLTE = chunks.Find(chunk => new string(chunk.type) == "PLTE") as PLTE;
-            List<Chunk> IDATs = chunks.FindAll(chunk => new string(chunk.type) == "IDAT");
+            List<Chunk> IDATs = GetIDATChunks();
             IEND IEND = chunks.Find(chunk => new string(chunk.type) == "IEND") as IEND;
 
-            //Signature
             writer.Write(PngSignature);
 
-            //IHDR
-            writer.WriteUlong(IHDR.length);
-            writer.Write(IHDR.type);
-            writer.Write(IHDR.data);
-            writer.Write(IHDR.crc);
+            writer.WriteChunk(IHDR);
 
-            //PLTE
             if (PLTE != null)
             {
-                writer.WriteUlong(PLTE.length);
-                writer.Write(PLTE.type);
-                writer.Write(PLTE.data);
-                writer.Write(PLTE.crc);
+                writer.WriteChunk(PLTE);
             }
 
-            //IDAT
             foreach (IDAT data in IDATs)
             {
-                writer.WriteUlong(data.length);
-                writer.Write(data.type);
-                writer.Write(data.data);
-                writer.Write(data.crc);
+                writer.WriteChunk(data);
             }
 
-            //IEND
-            writer.WriteUlong(IEND.length);
-            writer.Write(IEND.type);
-            writer.Write(IEND.data);
-            writer.Write(IEND.crc);
+            writer.WriteChunk(IEND);
 
             writer.Close();
+        }
+
+        public void Save(string path, string fileName)
+        {
+            BinaryWriter writer = new BinaryWriter(File.Open(path + fileName, FileMode.Create));
+            writer.Write(PngSignature);
+            foreach (Chunk chunk in chunks)
+            {
+                writer.WriteChunk(chunk);
+            }
         }
 
         public void SaveWithoutMetadata(string path, string fileName)
@@ -89,10 +82,7 @@ namespace EmediaWPF
                     continue;
                 else
                 {
-                    writer.Write(BitConverter.GetBytes(chunk.length).Reverse().ToArray());
-                    writer.Write(chunk.type);
-                    writer.Write(chunk.data);
-                    writer.Write(chunk.crc);
+                    writer.WriteChunk(chunk);
                 }
             }
             writer.Close();
@@ -108,13 +98,20 @@ namespace EmediaWPF
                     continue;
                 else
                 {
-                    writer.Write(BitConverter.GetBytes(chunk.length).Reverse().ToArray());
-                    writer.Write(chunk.type);
-                    writer.Write(chunk.data);
-                    writer.Write(chunk.crc);
+                    writer.WriteChunk(chunk);
                 }
             }
             writer.Close();
+        }
+
+        public PngParser GetEncrypted()
+        {
+            throw new NotImplementedException();
+        }
+
+        public PngParser GetDecrypted()
+        {
+            throw new NotImplementedException();
         }
 
         private void AssertPng()
@@ -143,6 +140,31 @@ namespace EmediaWPF
                 if (newChunk is IEND)
                     break;
             }
+        }
+
+        private List<Chunk> GetIDATChunks()
+        {
+            return chunks.FindAll(chunk => chunk is IDAT);
+        }
+
+        private List<Chunk> GetChunks(Type type)
+        {
+            return chunks.FindAll(chunk => chunk.GetType() == type);
+        }
+
+        private void InsertChunks(List<Chunk> newChunks)
+        {
+            chunks.InsertRange(chunks.Count-2, newChunks);
+        }
+
+        private void DeleteChunksOfType(string type)
+        {
+            chunks.RemoveAll(chunk => new string(chunk.type) == type);
+        }
+
+        private void DeleteChunksOfType(Type type)
+        {
+            chunks.RemoveAll(chunk => chunk.GetType() == type);
         }
 
         private byte[] ReadDataOfChunk(uint length)

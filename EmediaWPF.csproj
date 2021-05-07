@@ -120,6 +120,7 @@
     <Compile Include="Chunks\XmlPrinter.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="Png\BinaryWriterExtensions.cs" />
+    <Compile Include="Png\EncryptionSave.cs" />
     <Compile Include="Png\Singleton.cs" />
     <Compile Include="Png\SaveManager.cs" />
     <Compile Include="Png\DataEncryption.cs" />
