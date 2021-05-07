@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace EmediaWPF
 {
-    class DataEncryption
+    class DataEncryption : Singleton<DataEncryption>
     {
         private RandomNumberGenerator rng = new RandomNumberGenerator();
 
@@ -20,6 +20,24 @@ namespace EmediaWPF
         {
             rng = new RandomNumberGenerator();
             PrepareKeys();
+        }
+
+        public DataEncryption(EncryptionSave keys)
+        {
+            rng = new RandomNumberGenerator();
+            d = keys.d;
+            e = keys.e;
+            n = keys.n;
+        }
+
+        public EncryptionSave GetKeys()
+        {
+            return new EncryptionSave
+            {
+                d = d,
+                e = e,
+                n = n
+            };
         }
 
         public byte[] EncryptData(byte[] chunkData)

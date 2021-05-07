@@ -47,7 +47,7 @@ namespace EmediaWPF
             writer.Write(PngSignature);
 
             //IHDR
-            writer.Write(BitConverter.GetBytes(IHDR.length).Reverse().ToArray());
+            writer.WriteUlong(IHDR.length);
             writer.Write(IHDR.type);
             writer.Write(IHDR.data);
             writer.Write(IHDR.crc);
@@ -55,7 +55,7 @@ namespace EmediaWPF
             //PLTE
             if (PLTE != null)
             {
-                writer.Write(BitConverter.GetBytes(PLTE.length).Reverse().ToArray());
+                writer.WriteUlong(PLTE.length);
                 writer.Write(PLTE.type);
                 writer.Write(PLTE.data);
                 writer.Write(PLTE.crc);
@@ -64,14 +64,14 @@ namespace EmediaWPF
             //IDAT
             foreach (IDAT data in IDATs)
             {
-                writer.Write(BitConverter.GetBytes(data.length).Reverse().ToArray());
+                writer.WriteUlong(data.length);
                 writer.Write(data.type);
                 writer.Write(data.data);
                 writer.Write(data.crc);
             }
 
             //IEND
-            writer.Write(BitConverter.GetBytes(IEND.length).Reverse().ToArray());
+            writer.WriteUlong(IEND.length);
             writer.Write(IEND.type);
             writer.Write(IEND.data);
             writer.Write(IEND.crc);
