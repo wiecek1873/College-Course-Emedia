@@ -1,10 +1,13 @@
 ﻿using System.Numerics;
+using System.Threading.Tasks;
+using BigPrimeNumber;
+using BigPrimeNumber.Primality.Heuristic;
 
 namespace EmediaWPF
 {
     class PrimeNumbers
     {
-        public static int NextPrime(int N)
+        public static async Task<int> NextPrimeAsync(int N)
         {
             if (N <= 1)
                 return 2;
@@ -16,13 +19,13 @@ namespace EmediaWPF
             {
                 prime++;
 
-                if (IsPrime(prime))
+                if (await IsPrimeAsync(prime))
                     found = true;
             }
             return prime;
         }
 
-        public static BigInteger NextPrime(BigInteger N)
+        public static async Task<BigInteger> NextPrimeAsync(BigInteger N)
         {
             if (N <= 1)
                 return 2;
@@ -34,13 +37,13 @@ namespace EmediaWPF
             {
                 prime++;
 
-                if (IsPrime(prime))
+                if (await IsPrimeAsync(prime))
                     found = true;
             }
             return prime;
         }
 
-        public static int PreviousPrime(int N)
+        public static async Task<int> PreviousPrimeAsync(int N)
         {
             if (N <= 1)
                 return 1;
@@ -52,13 +55,13 @@ namespace EmediaWPF
             {
                 prime--;
 
-                if (IsPrime(prime))
+                if (await IsPrimeAsync(prime))
                     found = true;
             }
             return prime;
         }
 
-        public static BigInteger PreviousPrime(BigInteger N)
+        public static async Task<BigInteger> PreviousPrimeAsync(BigInteger N)
         {
             if (N <= 1)
                 return 1;
@@ -70,7 +73,7 @@ namespace EmediaWPF
             {
                 prime--;
 
-                if (IsPrime(prime))
+                if (await IsPrimeAsync(prime))
                     found = true;
             }
             return prime;
@@ -118,42 +121,15 @@ namespace EmediaWPF
             //return GreatestCommonDivisor(a, b - a);
         }
 
-        private static bool IsPrime(int n)
+        private static Task<bool> IsPrimeAsync(int n)
         {
-            // Corner cases
-            if (n <= 1) return false;
-            if (n <= 3) return true;
-
-            // This is checked so that we can skip
-            // middle five numbers in below loop
-            if (n % 2 == 0 || n % 3 == 0)
-                return false;
-
-            for (int i = 5; i * i <= n; i = i + 6)
-                if (n % i == 0 ||
-                    n % (i + 2) == 0)
-                    return false;
-
-            return true;
+            BigInteger big = n;
+            return big.IsPrime(new FermatTest(1234));
         }
 
-        private static bool IsPrime(BigInteger n)
+        private static Task<bool> IsPrimeAsync(BigInteger n)
         {
-            // Corner cases
-            if (n <= 1) return false;
-            if (n <= 3) return true;
-
-            // This is checked so that we can skip
-            // middle five numbers in below loop
-            if (n % 2 == 0 || n % 3 == 0)
-                return false;
-
-            for (int i = 5; i * i <= n; i = i + 6)
-                if (n % i == 0 ||
-                    n % (i + 2) == 0)
-                    return false;
-
-            return true;
+            return n.IsPrime(new FermatTest(1234));
         }
     }
 }

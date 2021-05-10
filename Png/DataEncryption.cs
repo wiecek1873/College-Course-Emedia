@@ -119,13 +119,13 @@ namespace EmediaWPF
             return BigInteger.ModPow(encryptedDataAsNumber, d, n).ToByteArray();
         }
 
-        private void PrepareKeys()
+        private async void PrepareKeys()
         {
-            p = PrimeNumbers.NextPrime(rng.Next(2, 1000, 999999999));
-            q = PrimeNumbers.NextPrime(rng.Next(2, 1000, 999999999));
+            p = await PrimeNumbers.NextPrimeAsync(rng.Next(2, 1000, 999999999));
+            q = await PrimeNumbers.NextPrimeAsync(rng.Next(2, 1000, 999999999));
 
             if (p == q)
-                p = PrimeNumbers.NextPrime(p);
+                p = await PrimeNumbers .NextPrimeAsync(p);
 
             n = p * q;
             totient = (p - 1) * (q - 1);

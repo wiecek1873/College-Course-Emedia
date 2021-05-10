@@ -119,6 +119,7 @@
     <Compile Include="Chunks\NotSupportedChunk.cs" />
     <Compile Include="Chunks\XmlPrinter.cs" />
     <Compile Include="Console.cs" />
+    <Compile Include="Primes\BigIntegerExtensions.cs" />
     <Compile Include="Png\BinaryWriterExtensions.cs" />
     <Compile Include="Png\EncryptionSave.cs" />
     <Compile Include="Png\Singleton.cs" />
@@ -136,6 +137,22 @@
     <Compile Include="Png\PngParser.cs" />
     <Compile Include="Png\PrimeNumbers.cs" />
     <Compile Include="Png\RandomNumberGenerator.cs" />
+    <Compile Include="Primes\BigIntegerHelpers.cs" />
+    <Compile Include="Primes\BigMath.cs" />
+    <Compile Include="Primes\CoprimeBigInteger.cs" />
+    <Compile Include="Primes\FermatTest.cs" />
+    <Compile Include="Primes\IPrimalityTest.cs" />
+    <Compile Include="Primes\IRandomProvider.cs" />
+    <Compile Include="Primes\MersenneSequence.cs" />
+    <Compile Include="Primes\NaiveTest.cs" />
+    <Compile Include="Primes\PrimalityTest.cs" />
+    <Compile Include="Primes\PrimaryBigInteger.cs" />
+    <Compile Include="Primes\PrimeNumbers.cs" />
+    <Compile Include="Primes\RandomBigInteger.cs" />
+    <Compile Include="Primes\RobinMillerTest.cs" />
+    <Compile Include="Primes\SimpleRandomProvider.cs" />
+    <Compile Include="Primes\SolovayStrassenTest.cs" />
+    <Compile Include="Primes\StrongRandomProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -22,7 +22,7 @@ namespace EmediaWPF
 
         private void LoadFile_Click(object sender, RoutedEventArgs e)
         {
-            // TemporaryRSATest();
+            TemporaryRSATest();
 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.FileName = "Image"; // Default file name
