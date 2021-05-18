@@ -53,7 +53,7 @@ namespace EmediaWPF
                 partToEncrypt.Add(byteOfData);
                 if (partToEncrypt.Count == keyLength)
                 {
-					List<Byte> partOfEncryptedData = Encrypt(partToEncrypt.ToArray()).ToList();
+					List<byte> partOfEncryptedData = Encrypt(partToEncrypt.ToArray()).ToList();
 					while (partOfEncryptedData.Count < n.ToByteArray().Length)
 					{
                         if (new BigInteger(partOfEncryptedData.ToArray()).Sign == -1) //Jeśli ujemna
@@ -69,7 +69,7 @@ namespace EmediaWPF
 
             if (partToEncrypt.Count > 0)
             {
-                List<Byte> partOfEncryptedData = Encrypt(partToEncrypt.ToArray()).ToList();
+                List<byte> partOfEncryptedData = Encrypt(partToEncrypt.ToArray()).ToList();
                 while (partOfEncryptedData.Count < n.ToByteArray().Length)
                 {
                     if (new BigInteger(partOfEncryptedData.ToArray()).Sign == -1) //Jeśli ujemna
