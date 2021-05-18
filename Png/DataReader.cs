@@ -1,3 +1,5 @@
+using System;
+
 namespace EmediaWPF
 {
     public static class DataReader

@@ -16,6 +16,8 @@ namespace EmediaWPF
         public BigInteger e;
         public BigInteger d;
 
+        public int KeyLength {get => 1234;} // todo 
+
         public DataEncryption()
         {
             rng = new RandomNumberGenerator();

@@ -70,6 +70,7 @@ namespace EmediaWPF
             {
                 writer.WriteChunk(chunk);
             }
+            writer.Close();
         }
 
         public void SaveWithoutMetadata(string path, string fileName)
@@ -90,14 +91,47 @@ namespace EmediaWPF
 
         public void SaveAndEncrypt(string path, string fileName)
         {
-            BinaryWriter writer = new BinaryWriter(File.Open(path + fileName, FileMode.Create));
-            writer.Write(PngSignature);
-            foreach (Chunk chunk in chunks)
+            EncryptMetadata();
+            EncryptIDAT();
+            Save(path, fileName);
+        }
+
+        private void EncryptMetadata()
+        {
+            foreach (var chunk in chunks)
             {
-                writer.WriteChunk(chunk);
-                // todo szyfrkowanie
+                if (! chunk.IsCritical())
+                {
+                    if (chunk.SizeInMemory > DataEncryption.Instance.KeyLength)
+                    {
+                        chunk.data = DataEncryption.Instance.EncryptData(chunk.data);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException(); // todo szyfrowanie wiekszych chunkow
+                    }
+                }
             }
-            writer.Close();
+        }
+
+        private void EncryptIDAT()
+        {
+            List<Chunk> idats = GetIDATChunks();
+
+            foreach (var chunk in idats)
+            {
+                if (chunk.SizeInMemory > DataEncryption.Instance.KeyLength)
+                {
+                    chunk.data = DataEncryption.Instance.EncryptData(chunk.data);
+                }
+                else
+                {
+                    throw new NotImplementedException(); // todo szyfrowanie wiekszych chunkow
+                }
+            }
+
+            DeleteChunksOfType(typeof(IDAT));
+            InsertChunks(idats);
         }
 
         private void AssertPng()
