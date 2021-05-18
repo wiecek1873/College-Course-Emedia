@@ -44,14 +44,6 @@ namespace EmediaWPF
 
         public byte[] EncryptData(byte[] chunkData)
         {
-            Console.WriteLine("p: " + p);
-            Console.WriteLine("q: " + q);
-            Console.WriteLine("n: " + n);
-            Console.WriteLine("totient: " + totient);
-            Console.WriteLine("e: " + e);
-            Console.WriteLine("d: " + d);
-            Console.WriteLine();
-
             int keyLength = n.ToByteArray().Length - 1;
             List<byte> partToEncrypt = new List<byte>();
             List<byte> encryptedData = new List<byte>();
@@ -61,28 +53,32 @@ namespace EmediaWPF
                 partToEncrypt.Add(byteOfData);
                 if (partToEncrypt.Count == keyLength)
                 {
-                    var xd = Encrypt(partToEncrypt.ToArray()).ToList();
-                    while (xd.Count < n.ToByteArray().Length)
-                    {
-                        xd.Add(0);
-                    }
+					List<Byte> partOfEncryptedData = Encrypt(partToEncrypt.ToArray()).ToList();
+					while (partOfEncryptedData.Count < n.ToByteArray().Length)
+					{
+                        if (new BigInteger(partOfEncryptedData.ToArray()).Sign == -1) //Jeśli ujemna
+                            partOfEncryptedData.Add(255);
+                        else
+                            partOfEncryptedData.Add(0);
+					}
 
-                    //Console.WriteLine("Zaszyfrowane bajty: " + string.Join(" ", xd) + " A jako big int: " + new BigInteger(xd.ToArray()));
-                    encryptedData.AddRange(xd);
+					encryptedData.AddRange(partOfEncryptedData);
                     partToEncrypt.Clear();
                 }
             }
 
             if (partToEncrypt.Count > 0)
             {
-                var xd = Encrypt(partToEncrypt.ToArray()).ToList();
-                while (xd.Count < n.ToByteArray().Length)
+                List<Byte> partOfEncryptedData = Encrypt(partToEncrypt.ToArray()).ToList();
+                while (partOfEncryptedData.Count < n.ToByteArray().Length)
                 {
-                    xd.Add(0);
+                    if (new BigInteger(partOfEncryptedData.ToArray()).Sign == -1) //Jeśli ujemna
+                        partOfEncryptedData.Add(255);
+                    else
+                        partOfEncryptedData.Add(0);
                 }
 
-                //Console.WriteLine("Zaszyfrowane bajty: " + string.Join(" ", xd) + " A jako big int: " + new BigInteger(xd.ToArray()));
-                encryptedData.AddRange(xd);
+                encryptedData.AddRange(partOfEncryptedData);
                 partToEncrypt.Clear();
             }
 
@@ -100,7 +96,6 @@ namespace EmediaWPF
                 partToDecrypt.Add(byteOfData);
                 if (partToDecrypt.Count == keyLength)
                 {
-                    //Console.WriteLine("Deszyfrowane bajty: " + string.Join(" ", partToDecrypt) + " A jako big int: " + new BigInteger(partToDecrypt.ToArray()));
                     decryptedData.AddRange(Decrypt(partToDecrypt.ToArray()));
                     partToDecrypt.Clear();
                 }
@@ -152,7 +147,6 @@ namespace EmediaWPF
             }
             while (value != 0);
 
-            Console.WriteLine("k: " + k);
             return (1 + k * totient) / e;
         }
     }

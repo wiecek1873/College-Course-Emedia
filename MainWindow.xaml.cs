@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using AForge.Imaging;
 using System.Linq;
+using System.Numerics;
 
 namespace EmediaWPF
 {
@@ -22,34 +23,34 @@ namespace EmediaWPF
 
         private void LoadFile_Click(object sender, RoutedEventArgs e)
         {
-            TemporaryRSATest();
+			TemporaryRSATest();
 
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.FileName = "Image"; // Default file name
-            dlg.DefaultExt = ".png"; // Default file extension
+			//Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+			//dlg.FileName = "Image"; // Default file name
+			//dlg.DefaultExt = ".png"; // Default file extension
 
-            Nullable<bool> result = dlg.ShowDialog();
+			//Nullable<bool> result = dlg.ShowDialog();
 
-            if (result == true)
-            {
-                imageName = dlg.FileName;
-                var png = new PngParser(dlg.FileName);
+			//if (result == true)
+			//{
+			//    imageName = dlg.FileName;
+			//    var png = new PngParser(dlg.FileName);
 
-                if (!Debug)
-                {
-                    Console.Clear();
-                    png.PrintChunks();
-                }
+			//    if (!Debug)
+			//    {
+			//        Console.Clear();
+			//        png.PrintChunks();
+			//    }
 
-                var uri = new Uri(dlg.FileName);
-                var image = new BitmapImage(uri);
-                MainImage.Source = image;
-                FourierImage.Source = FFT.FastFourierTransform(image, out complexImage);
-            }
+			//    var uri = new Uri(dlg.FileName);
+			//    var image = new BitmapImage(uri);
+			//    MainImage.Source = image;
+			//    FourierImage.Source = FFT.FastFourierTransform(image, out complexImage);
+			//}
 
-            PhaseFFTButton.IsEnabled = true;
-            BackwardFFTButton.IsEnabled = true;
-        }
+			//PhaseFFTButton.IsEnabled = true;
+			//BackwardFFTButton.IsEnabled = true;
+		}
 
         private void ClearFile_Click(object sender, RoutedEventArgs e)
         {
