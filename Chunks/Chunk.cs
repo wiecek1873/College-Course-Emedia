@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace EmediaWPF
 {
@@ -9,7 +10,9 @@ namespace EmediaWPF
 		public byte[] data;
 		public byte[] crc;
 
-		public Chunk(char[] type, uint length, byte[] data, byte[] crc)
+        public uint SizeInMemory { get => length + (uint) 12; }
+
+        public Chunk(char[] type, uint length, byte[] data, byte[] crc)
 		{
 			this.length = length;
 			this.type = type;
@@ -22,6 +25,17 @@ namespace EmediaWPF
 		public bool IsCritical() => IsCritical(type);
 		public bool IsPublic() => IsPublic(type);
 		public bool IsSafeToCopy() => IsSafeToCopy(type);
+
+		public byte[] ToArray()
+		{
+			using (MemoryStream memory = new MemoryStream())
+			{
+				memory.WriteChunk(this);
+				return memory.ToArray();
+			}
+		}
+
+		// public static implicit operator byte[] (Chunk chunk) => chunk.ToArray();
 
 		public static bool IsCritical(char[] type) => char.IsUpper(type[0]);
 		public static bool IsPublic(char[] type) => char.IsUpper(type[1]);
@@ -60,5 +74,5 @@ namespace EmediaWPF
 			if (IsCritical(type))
 				throw new NotImplementedException(new string(type));
 		}
-	}
+    }
 }

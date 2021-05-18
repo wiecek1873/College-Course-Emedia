@@ -1,3 +1,5 @@
+using System;
+
 namespace EmediaWPF
 {
     public static class DataReader
@@ -8,7 +10,7 @@ namespace EmediaWPF
             for (int i = startIndex; i < startIndex + 4; ++i)
             {
                 value <<= 8;
-                value += (uint) bytes[i];
+                value += (uint)bytes[i];
             }
             return value;
         }

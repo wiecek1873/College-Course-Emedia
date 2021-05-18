@@ -1,142 +1,153 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
-using Extreme.Mathematics;
+using System.Numerics;
 
 namespace EmediaWPF
 {
-	class DataEncryption
-	{
-		private RandomNumberGenerator rng = new RandomNumberGenerator();
+    class DataEncryption : Singleton<DataEncryption>
+    {
+        private RandomNumberGenerator rng = new RandomNumberGenerator();
 
-		public BigInteger p;
-		public BigInteger q;
-		public BigInteger n;
-		public BigInteger totient; //To jest to przekreślone o
-		public BigInteger e;
-		public BigInteger d;
+        public BigInteger p;
+        public BigInteger q;
+        public BigInteger n;
+        public BigInteger totient; //To jest to przekreślone o
+        public BigInteger e;
+        public BigInteger d;
 
-		public DataEncryption()
-		{
-			rng = new RandomNumberGenerator();
-			PrepareKeys();
-		}
+        public int KeyLength {get => 1234;} // todo 
 
-		public byte[] EncryptData(byte[] chunkData)
-		{
-			Console.WriteLine("p: " + p);
-			Console.WriteLine("q: " + q);
-			Console.WriteLine("n: " + n);
-			Console.WriteLine("totient: " + totient);
-			Console.WriteLine("e: " + e);
-			Console.WriteLine("d: " + d);
-			Console.WriteLine();
+        public DataEncryption()
+        {
+            rng = new RandomNumberGenerator();
+            PrepareKeys();
+        }
 
-			int keyLegth = n.ToByteArray().Length - 1;
-			List<byte> partToEncrypt = new List<byte>();
-			List<byte> encryptedData = new List<byte>();
+        public DataEncryption(EncryptionSave keys)
+        {
+            rng = new RandomNumberGenerator();
+            d = keys.d;
+            e = keys.e;
+            n = keys.n;
+        }
 
-			foreach (byte byteOfData in chunkData)
-			{
-				partToEncrypt.Add(byteOfData);
-				if (partToEncrypt.Count == keyLegth)
-				{
+        public EncryptionSave GetKeys()
+        {
+            return new EncryptionSave
+            {
+                d = d,
+                e = e,
+                n = n
+            };
+        }
 
-					var xd = Encrypt(partToEncrypt.ToArray()).ToList();
-					while (xd.Count < n.ToByteArray().Length)
+        public byte[] EncryptData(byte[] chunkData)
+        {
+            int keyLength = n.ToByteArray().Length - 1;
+            List<byte> partToEncrypt = new List<byte>();
+            List<byte> encryptedData = new List<byte>();
+
+            foreach (byte byteOfData in chunkData)
+            {
+                partToEncrypt.Add(byteOfData);
+                if (partToEncrypt.Count == keyLength)
+                {
+					List<Byte> partOfEncryptedData = Encrypt(partToEncrypt.ToArray()).ToList();
+					while (partOfEncryptedData.Count < n.ToByteArray().Length)
 					{
-						xd.Add(0);
+                        if (new BigInteger(partOfEncryptedData.ToArray()).Sign == -1) //Jeśli ujemna
+                            partOfEncryptedData.Add(255);
+                        else
+                            partOfEncryptedData.Add(0);
 					}
 
-					//Console.WriteLine("Zaszyfrowane bajty: " + string.Join(" ", xd) + " A jako big int: " + new BigInteger(xd.ToArray()));
-					encryptedData.AddRange(xd);
-					partToEncrypt.Clear();
-				}
-			}
-			
-			if (partToEncrypt.Count > 0)
-			{
-				var xd = Encrypt(partToEncrypt.ToArray()).ToList();
-				while (xd.Count < n.ToByteArray().Length)
-				{
-					xd.Add(0);
-				}
+					encryptedData.AddRange(partOfEncryptedData);
+                    partToEncrypt.Clear();
+                }
+            }
 
-				//Console.WriteLine("Zaszyfrowane bajty: " + string.Join(" ", xd) + " A jako big int: " + new BigInteger(xd.ToArray()));
-				encryptedData.AddRange(xd);
-				partToEncrypt.Clear();
-			}
+            if (partToEncrypt.Count > 0)
+            {
+                List<Byte> partOfEncryptedData = Encrypt(partToEncrypt.ToArray()).ToList();
+                while (partOfEncryptedData.Count < n.ToByteArray().Length)
+                {
+                    if (new BigInteger(partOfEncryptedData.ToArray()).Sign == -1) //Jeśli ujemna
+                        partOfEncryptedData.Add(255);
+                    else
+                        partOfEncryptedData.Add(0);
+                }
 
-			return encryptedData.ToArray();
-		}
+                encryptedData.AddRange(partOfEncryptedData);
+                partToEncrypt.Clear();
+            }
 
-		public byte[] DecryptData(byte[] chunkData)
-		{
-			int keyLegth = n.ToByteArray().Length;
-			List<byte> partToDecrypt = new List<byte>();
-			List<byte> decryptedData = new List<byte>();
+            return encryptedData.ToArray();
+        }
 
-			foreach (byte byteOfData in chunkData)
-			{
-				partToDecrypt.Add(byteOfData);
-				if (partToDecrypt.Count == keyLegth)
-				{
-					//Console.WriteLine("Deszyfrowane bajty: " + string.Join(" ", partToDecrypt) + " A jako big int: " + new BigInteger(partToDecrypt.ToArray()));
-					decryptedData.AddRange(Decrypt(partToDecrypt.ToArray()));
-					partToDecrypt.Clear();
-				}
-			}
+        public byte[] DecryptData(byte[] chunkData)
+        {
+            int keyLength = n.ToByteArray().Length;
+            List<byte> partToDecrypt = new List<byte>();
+            List<byte> decryptedData = new List<byte>();
 
-			return decryptedData.ToArray();
-		}
+            foreach (byte byteOfData in chunkData)
+            {
+                partToDecrypt.Add(byteOfData);
+                if (partToDecrypt.Count == keyLength)
+                {
+                    decryptedData.AddRange(Decrypt(partToDecrypt.ToArray()));
+                    partToDecrypt.Clear();
+                }
+            }
 
-		public byte[] Encrypt(byte[] data)
-		{
-			BigInteger dataAsNumber = new BigInteger(data);
-			return BigInteger.ModularPow(dataAsNumber, e, n).ToByteArray();
-		}
+            return decryptedData.ToArray();
+        }
 
-		public byte[] Decrypt(byte[] encryptedData)
-		{
-			BigInteger encryptedDataAsNumber = new BigInteger(encryptedData);
-			return BigInteger.ModularPow(encryptedDataAsNumber, d, n).ToByteArray();
-		}
+        public byte[] Encrypt(byte[] data)
+        {
+            BigInteger dataAsNumber = new BigInteger(data);
+            return BigInteger.ModPow(dataAsNumber, e, n).ToByteArray();
+        }
 
-		private void PrepareKeys()
-		{
-			p = PrimeNumbers.NextPrime(rng.Next(2, 1000, 999999999));
-			q = PrimeNumbers.NextPrime(rng.Next(2, 1000, 999999999));
+        public byte[] Decrypt(byte[] encryptedData)
+        {
+            BigInteger encryptedDataAsNumber = new BigInteger(encryptedData);
+            return BigInteger.ModPow(encryptedDataAsNumber, d, n).ToByteArray();
+        }
 
-			if (p == q)
-				p = PrimeNumbers.NextPrime(p);
+        private async void PrepareKeys()
+        {
+            p = await PrimeNumbers.NextPrimeAsync(rng.Next(2, 1000, 999999999));
+            q = await PrimeNumbers.NextPrimeAsync(rng.Next(2, 1000, 999999999));
 
-			n = p * q;
-			totient = (p - 1) * (q - 1);
+            if (p == q)
+                p = await PrimeNumbers .NextPrimeAsync(p);
 
-			do
-			{
-				e = rng.Next(2, 1000, totient);
-			} while (!PrimeNumbers.AreCoPrime(e, totient));
+            n = p * q;
+            totient = (p - 1) * (q - 1);
 
-			d = ExtendedEuclideanAlgorithm(e, totient);
-		}
+            do
+            {
+                e = rng.Next(2, 1000, totient);
+            }
+            while (!PrimeNumbers.AreCoPrime(e, totient));
 
-		private BigInteger ExtendedEuclideanAlgorithm(BigInteger e, BigInteger totient)
-		{
-			BigInteger k = 0;
-			BigInteger value;
+            d = ExtendedEuclideanAlgorithm(e, totient);
+        }
 
-			do
-			{
-				k += 1;
-				value = (1 + k * totient) % e;
-			} while (value != 0);
+        private BigInteger ExtendedEuclideanAlgorithm(BigInteger e, BigInteger totient)
+        {
+            BigInteger k = 0;
+            BigInteger value;
+            do
+            {
+                k++;
+                value = (1 + k * totient) % e;
+            }
+            while (value != 0);
 
-			Console.WriteLine("k: " + k);
-			return (1 + k * totient) / e;
-		}
-	}
+            return (1 + k * totient) / e;
+        }
+    }
 }
