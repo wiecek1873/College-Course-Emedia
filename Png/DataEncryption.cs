@@ -16,7 +16,7 @@ namespace EmediaWPF
         public BigInteger e;
         public BigInteger d;
 
-        public int KeyLength {get => 1234;} // todo 
+        public int KeyLength {get => n.ToByteArray().Length;} // todo
 
         public DataEncryption()
         {
@@ -44,41 +44,27 @@ namespace EmediaWPF
 
         public byte[] EncryptData(byte[] chunkData)
         {
-            int keyLength = n.ToByteArray().Length - 1;
+            int dataLength = KeyLength - 1;
             List<byte> partToEncrypt = new List<byte>();
             List<byte> encryptedData = new List<byte>();
 
             foreach (byte byteOfData in chunkData)
             {
                 partToEncrypt.Add(byteOfData);
-                if (partToEncrypt.Count == keyLength)
+                if (partToEncrypt.Count == dataLength)
                 {
-					List<byte> partOfEncryptedData = Encrypt(partToEncrypt.ToArray()).ToList();
-					while (partOfEncryptedData.Count < n.ToByteArray().Length)
-					{
-                        if (new BigInteger(partOfEncryptedData.ToArray()).Sign == -1) //Jeśli ujemna
-                            partOfEncryptedData.Add(255);
-                        else
-                            partOfEncryptedData.Add(0);
-					}
-
-					encryptedData.AddRange(partOfEncryptedData);
+					byte[] encrypted = Encrypt(partToEncrypt.ToArray());
+                    Array.Resize<byte>(ref encrypted, dataLength+1);
+					encryptedData.AddRange(encrypted);
                     partToEncrypt.Clear();
                 }
             }
 
             if (partToEncrypt.Count > 0)
             {
-                List<byte> partOfEncryptedData = Encrypt(partToEncrypt.ToArray()).ToList();
-                while (partOfEncryptedData.Count < n.ToByteArray().Length)
-                {
-                    if (new BigInteger(partOfEncryptedData.ToArray()).Sign == -1) //Jeśli ujemna
-                        partOfEncryptedData.Add(255);
-                    else
-                        partOfEncryptedData.Add(0);
-                }
-
-                encryptedData.AddRange(partOfEncryptedData);
+                byte[] encrypted = Encrypt(partToEncrypt.ToArray());
+                Array.Resize<byte>(ref encrypted, dataLength+1);
+                encryptedData.AddRange(encrypted);
                 partToEncrypt.Clear();
             }
 
@@ -87,16 +73,18 @@ namespace EmediaWPF
 
         public byte[] DecryptData(byte[] chunkData)
         {
-            int keyLength = n.ToByteArray().Length;
+            int dataLength = KeyLength;
             List<byte> partToDecrypt = new List<byte>();
             List<byte> decryptedData = new List<byte>();
 
             foreach (byte byteOfData in chunkData)
             {
                 partToDecrypt.Add(byteOfData);
-                if (partToDecrypt.Count == keyLength)
+                if (partToDecrypt.Count == dataLength)
                 {
-                    decryptedData.AddRange(Decrypt(partToDecrypt.ToArray()));
+                    byte[] decrypted = Decrypt(partToDecrypt.ToArray());
+                    // Array.Resize<byte>(ref decrypted, dataLength-1);
+                    decryptedData.AddRange(decrypted);
                     partToDecrypt.Clear();
                 }
             }
@@ -106,14 +94,14 @@ namespace EmediaWPF
 
         public byte[] Encrypt(byte[] data)
         {
-            BigInteger dataAsNumber = new BigInteger(data);
-            return BigInteger.ModPow(dataAsNumber, e, n).ToByteArray();
+            BigInteger dataAsNumber = new BigInteger(data, true);
+            return BigInteger.ModPow(dataAsNumber, e, n).ToByteArray(true);
         }
 
         public byte[] Decrypt(byte[] encryptedData)
         {
-            BigInteger encryptedDataAsNumber = new BigInteger(encryptedData);
-            return BigInteger.ModPow(encryptedDataAsNumber, d, n).ToByteArray();
+            BigInteger encryptedDataAsNumber = new BigInteger(encryptedData, true);
+            return BigInteger.ModPow(encryptedDataAsNumber, d, n).ToByteArray(true);
         }
 
         private async void PrepareKeys()

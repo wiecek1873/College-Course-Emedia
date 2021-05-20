@@ -63,6 +63,8 @@ namespace EmediaWPF
                 string txt = string.Join(" ",  example.Select((b) => b.ToString()));
                 Console.WriteLine($"[{txt}] = {big}");
             }
+
+            TemporaryRSATest();
         }
 
         private void LoadFile_Click(object sender, RoutedEventArgs e)
@@ -141,7 +143,8 @@ namespace EmediaWPF
         {
             RandomNumberGenerator randomNumberGenerator = new RandomNumberGenerator();
             Random rng = new Random();
-            for (int i = 0; i < 1000000; i++)
+            int filed = 0;
+            for (int i = 0; i < 500; i++)
             {
                 DataEncryption dataEncryption = new DataEncryption();
                 byte[] data = randomNumberGenerator.GenerateRandomBytes(rng.Next(1, 15));
@@ -150,14 +153,21 @@ namespace EmediaWPF
 
                 if (!data.SequenceEqual(dec))
                 {
+                    Console.WriteLine();
                     Console.WriteLine("Błąd dla i : " + i);
-                    Console.WriteLine("Data: " + string.Join(" ", data));
-                    Console.WriteLine("Enc: " + string.Join(" ", enc));
-                    Console.WriteLine("Dec: " + string.Join(" ", dec));
+                    Console.WriteLine("Data: " + string.Join(" ", data.Select((b) => string.Format("{0,3}", b))));
+                    Console.WriteLine("|Enc: " + string.Join(" ", enc.Select((b) => string.Format("{0,3}", b))));
+                    Console.WriteLine("Dec:  " + string.Join(" ", dec.Select((b) => string.Format("{0,3}", b))));
+                    Console.WriteLine($"e = {dataEncryption.e}");
+                    Console.WriteLine($"d = {dataEncryption.d}");
+                    Console.WriteLine($"n = {dataEncryption.n}");
+                    Console.WriteLine($"key length = {dataEncryption.KeyLength}");
+                    ++filed;
                 }
                 else if (i % 100 == 0)
-                    Console.WriteLine("Jesteśmy na i: " + i);
+                    Console.WriteLine("| Jesteśmy na i: " + i + " Oblane: " + filed);
             }
+            Console.WriteLine("Oblane: " + filed);
         }
     }
 }
