@@ -5,6 +5,7 @@ using System.Windows.Media.Imaging;
 using AForge.Imaging;
 using System.Linq;
 using System.Numerics;
+using System.Collections.Generic;
 
 namespace EmediaWPF
 {
@@ -19,6 +20,46 @@ namespace EmediaWPF
         {
             InitializeComponent();
             ConsoleAllocator.ShowConsoleWindow();
+
+            List<int> numbersExamples = new List<int>
+            {
+                0, 1, -1, 1234, -1234, 255, -255
+            };
+
+            foreach (var number in numbersExamples)
+            {
+                var big = new BigInteger(number);
+                var arr = big.ToByteArray();
+                string txt = string.Join(" ",  arr.Select((b) => b.ToString()));
+                Console.WriteLine($"{number} = [{txt}]");
+            }
+
+            List<byte[]> bytesExamples = new List<byte[]>
+            {
+                new byte[]{0},
+                new byte[]{1},
+                new byte[]{255},
+                new byte[]{210, 4},
+                new byte[]{45, 251},
+                new byte[]{255, 0},
+                new byte[]{1, 255},
+            };
+
+            Console.WriteLine("----------------------");
+            foreach (var example in bytesExamples)
+            {
+                var big = new BigInteger(example);
+                string txt = string.Join(" ",  example.Select((b) => b.ToString()));
+                Console.WriteLine($"{txt} = [{big}]");
+            }
+
+            Console.WriteLine("----------------------");
+            foreach (var example in bytesExamples)
+            {
+                var big = new BigInteger(example, true);
+                string txt = string.Join(" ",  example.Select((b) => b.ToString()));
+                Console.WriteLine($"[{txt}] = {big}");
+            }
         }
 
         private void LoadFile_Click(object sender, RoutedEventArgs e)
