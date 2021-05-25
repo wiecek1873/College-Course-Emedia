@@ -144,14 +144,14 @@ namespace EmediaWPF
             RandomNumberGenerator randomNumberGenerator = new RandomNumberGenerator();
             Random rng = new Random();
             int filed = 0;
-            for (int i = 0; i < 500; i++)
+            for (int i = 0; i < 2000; i++)
             {
                 DataEncryption dataEncryption = new DataEncryption();
                 byte[] data = randomNumberGenerator.GenerateRandomBytes(rng.Next(1, 15));
                 var enc = dataEncryption.EncryptData(data);
                 var dec = dataEncryption.DecryptData(enc);
 
-                if (!data.SequenceEqual(dec))
+                if (! Comparer(data, dec))
                 {
                     Console.WriteLine();
                     Console.WriteLine("Błąd dla i : " + i);
@@ -168,6 +168,35 @@ namespace EmediaWPF
                     Console.WriteLine("| Jesteśmy na i: " + i + " Oblane: " + filed);
             }
             Console.WriteLine("Oblane: " + filed);
+        }
+
+        private bool Comparer(byte[] data, byte[] dec)
+        {
+            if (dec.Length < data.Length)
+            {
+                Console.WriteLine("mniejsza dlugosc! " + dec.Length + " " + data.Length);
+                return false;
+            }
+
+            for (int i = 0; i < dec.Length; ++i)
+                if (i < data.Length)
+                {
+                    if (data[i] != dec[i])
+                    {
+                        Console.WriteLine("rozne wartosci!");
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (dec[i] != 0)
+                    {
+                        Console.WriteLine("nie zera na koncu :(");
+                        return false;
+                    }
+                }
+
+            return true;
         }
     }
 }

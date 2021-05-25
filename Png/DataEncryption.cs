@@ -54,7 +54,7 @@ namespace EmediaWPF
                 if (partToEncrypt.Count == dataLength)
                 {
 					byte[] encrypted = Encrypt(partToEncrypt.ToArray());
-                    Array.Resize<byte>(ref encrypted, dataLength+1);
+                    Array.Resize<byte>(ref encrypted, KeyLength);
 					encryptedData.AddRange(encrypted);
                     partToEncrypt.Clear();
                 }
@@ -63,7 +63,7 @@ namespace EmediaWPF
             if (partToEncrypt.Count > 0)
             {
                 byte[] encrypted = Encrypt(partToEncrypt.ToArray());
-                Array.Resize<byte>(ref encrypted, dataLength+1);
+                Array.Resize<byte>(ref encrypted, KeyLength);
                 encryptedData.AddRange(encrypted);
                 partToEncrypt.Clear();
             }
@@ -73,17 +73,17 @@ namespace EmediaWPF
 
         public byte[] DecryptData(byte[] chunkData)
         {
-            int dataLength = KeyLength;
+            int dataLength = KeyLength - 1;
             List<byte> partToDecrypt = new List<byte>();
             List<byte> decryptedData = new List<byte>();
 
-            foreach (byte byteOfData in chunkData)
+            foreach (byte data in chunkData)
             {
-                partToDecrypt.Add(byteOfData);
-                if (partToDecrypt.Count == dataLength)
+                partToDecrypt.Add(data);
+                if (partToDecrypt.Count == KeyLength)
                 {
                     byte[] decrypted = Decrypt(partToDecrypt.ToArray());
-                    // Array.Resize<byte>(ref decrypted, dataLength-1);
+                    Array.Resize<byte>(ref decrypted, dataLength);
                     decryptedData.AddRange(decrypted);
                     partToDecrypt.Clear();
                 }
