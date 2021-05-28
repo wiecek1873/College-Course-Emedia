@@ -36,35 +36,39 @@ namespace EmediaWPF
 
             List<byte[]> bytesExamples = new List<byte[]>
             {
-                new byte[]{0},
-                new byte[]{1},
-                new byte[]{255},
-                new byte[]{210, 4},
-                new byte[]{45, 251},
-                new byte[]{45, 251, 0},
-                new byte[]{255, 0},
-                new byte[]{255, 0, 0},
-                new byte[]{1, 255},
-                new byte[]{1, 255, 0},
+                new byte[]{147,  75, 209},
+                new byte[]{173, 213, 192},
+                new byte[]{55, 41, 222},
+                new byte[]{45}
             };
+
+            DataEncryption dataEncryption = new DataEncryption();
 
             Console.WriteLine("----------------------");
             foreach (var example in bytesExamples)
             {
                 var big = new BigInteger(example);
-                string txt = string.Join(" ",  example.Select((b) => b.ToString()));
-                Console.WriteLine($"{txt} = [{big}]");
+                string txtEx = string.Join(" ",  example.Select((b) => b.ToString()));
+                byte[] enc = BigInteger.ModPow(big, dataEncryption.e, dataEncryption.n).ToByteArray();
+                byte[] dec = BigInteger.ModPow(new BigInteger(enc), dataEncryption.d, dataEncryption.n).ToByteArray();
+                string txtEnc = string.Join(" ",  enc.Select((b) => b.ToString()));
+                string txtDec = string.Join(" ",  dec.Select((b) => b.ToString()));
+                Console.WriteLine($"[{txtEx}] = {big} => [{txtEnc}] => [{txtDec}]");
             }
 
             Console.WriteLine("----------------------");
             foreach (var example in bytesExamples)
             {
                 var big = new BigInteger(example, true);
-                string txt = string.Join(" ",  example.Select((b) => b.ToString()));
-                Console.WriteLine($"[{txt}] = {big}");
+                string txtEx = string.Join(" ",  example.Select((b) => b.ToString()));
+                byte[] enc = BigInteger.ModPow(big, dataEncryption.e, dataEncryption.n).ToByteArray(true);
+                byte[] dec = BigInteger.ModPow(new BigInteger(enc, true), dataEncryption.d, dataEncryption.n).ToByteArray(true);
+                string txtEnc = string.Join(" ",  enc.Select((b) => b.ToString()));
+                string txtDec = string.Join(" ",  dec.Select((b) => b.ToString()));
+                Console.WriteLine($"[{txtEx}] = {big} => [{txtEnc}] => [{txtDec}]");
             }
 
-            TemporaryRSATest();
+            // TemporaryRSATest();
         }
 
         private void LoadFile_Click(object sender, RoutedEventArgs e)

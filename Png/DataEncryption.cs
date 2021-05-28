@@ -94,14 +94,12 @@ namespace EmediaWPF
 
         public byte[] Encrypt(byte[] data)
         {
-            BigInteger dataAsNumber = new BigInteger(data, true);
-            return BigInteger.ModPow(dataAsNumber, e, n).ToByteArray(true);
+            return BigInteger.ModPow(new BigInteger(data, true), e, n).ToByteArray(true);
         }
 
         public byte[] Decrypt(byte[] encryptedData)
         {
-            BigInteger encryptedDataAsNumber = new BigInteger(encryptedData, true);
-            return BigInteger.ModPow(encryptedDataAsNumber, d, n).ToByteArray(true);
+            return BigInteger.ModPow(new BigInteger(encryptedData, true), d, n).ToByteArray(true);
         }
 
         private async void PrepareKeys()
