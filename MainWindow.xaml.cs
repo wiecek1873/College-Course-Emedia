@@ -39,7 +39,9 @@ namespace EmediaWPF
                 new byte[]{147,  75, 209},
                 new byte[]{173, 213, 192},
                 new byte[]{55, 41, 222},
-                new byte[]{45}
+                new byte[]{45},
+                new byte[]{241, 222, 153},
+                new byte[]{16}
             };
 
             DataEncryption dataEncryption = new DataEncryption();
@@ -61,8 +63,29 @@ namespace EmediaWPF
             {
                 var big = new BigInteger(example, true);
                 string txtEx = string.Join(" ",  example.Select((b) => b.ToString()));
-                byte[] enc = BigInteger.ModPow(big, dataEncryption.e, dataEncryption.n).ToByteArray(true);
-                byte[] dec = BigInteger.ModPow(new BigInteger(enc, true), dataEncryption.d, dataEncryption.n).ToByteArray(true);
+                byte[] enc = dataEncryption.Encrypt(example);
+                byte[] dec = dataEncryption.Decrypt(enc);
+                string txtEnc = string.Join(" ",  enc.Select((b) => b.ToString()));
+                string txtDec = string.Join(" ",  dec.Select((b) => b.ToString()));
+                Console.WriteLine($"[{txtEx}] = {big} => [{txtEnc}] => [{txtDec}]");
+            }
+
+            List<byte[]> dataExamples = new List<byte[]>
+            {
+                new byte[]{147,  75, 209},
+                new byte[]{173, 213, 192, 55, 41, 222, 45},
+                new byte[]{241, 222, 153, 16}
+            };
+
+            Console.WriteLine("----------------------");
+            foreach (var example in dataExamples)
+            {
+                var big = new BigInteger(example, true);
+                string txtEx = string.Join(" ",  example.Select((b) => b.ToString()));
+
+                byte[] enc = dataEncryption.EncryptData(example);
+                byte[] dec = dataEncryption.DecryptData(enc);
+
                 string txtEnc = string.Join(" ",  enc.Select((b) => b.ToString()));
                 string txtDec = string.Join(" ",  dec.Select((b) => b.ToString()));
                 Console.WriteLine($"[{txtEx}] = {big} => [{txtEnc}] => [{txtDec}]");
@@ -147,29 +170,35 @@ namespace EmediaWPF
         {
             RandomNumberGenerator randomNumberGenerator = new RandomNumberGenerator();
             Random rng = new Random();
+
             int filed = 0;
-            for (int i = 0; i < 2000; i++)
+            for (int j = 0; j < 1000; ++j)
             {
                 DataEncryption dataEncryption = new DataEncryption();
-                byte[] data = randomNumberGenerator.GenerateRandomBytes(rng.Next(1, 15));
-                var enc = dataEncryption.EncryptData(data);
-                var dec = dataEncryption.DecryptData(enc);
 
-                if (! Comparer(data, dec))
+                for (int i = 0; i < 10000; i++)
                 {
-                    Console.WriteLine();
-                    Console.WriteLine("Błąd dla i : " + i);
-                    Console.WriteLine("Data: " + string.Join(" ", data.Select((b) => string.Format("{0,3}", b))));
-                    Console.WriteLine("|Enc: " + string.Join(" ", enc.Select((b) => string.Format("{0,3}", b))));
-                    Console.WriteLine("Dec:  " + string.Join(" ", dec.Select((b) => string.Format("{0,3}", b))));
-                    Console.WriteLine($"e = {dataEncryption.e}");
-                    Console.WriteLine($"d = {dataEncryption.d}");
-                    Console.WriteLine($"n = {dataEncryption.n}");
-                    Console.WriteLine($"key length = {dataEncryption.KeyLength}");
-                    ++filed;
+                    // DataEncryption dataEncryption = new DataEncryption();
+                    byte[] data = randomNumberGenerator.GenerateRandomBytes(rng.Next(1, 15));
+                    byte[] enc = dataEncryption.EncryptData(data);
+                    byte[] dec = dataEncryption.DecryptData(enc);
+
+                    if (! Comparer(data, dec))
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("Błąd dla i : " + i);
+                        Console.WriteLine("Data: " + string.Join(" ", data.Select((b) => string.Format("{0,3}", b))));
+                        Console.WriteLine("|Enc: " + string.Join(" ", enc.Select((b) => string.Format("{0,3}", b))));
+                        Console.WriteLine("Dec:  " + string.Join(" ", dec.Select((b) => string.Format("{0,3}", b))));
+                        Console.WriteLine($"e = {dataEncryption.e}");
+                        Console.WriteLine($"d = {dataEncryption.d}");
+                        Console.WriteLine($"n = {dataEncryption.n}");
+                        Console.WriteLine($"key length = {dataEncryption.KeyLength}");
+                        ++filed;
+                        break;
+                    }
                 }
-                else if (i % 100 == 0)
-                    Console.WriteLine("| Jesteśmy na i: " + i + " Oblane: " + filed);
+                Console.WriteLine("| Jesteśmy na j: " + j);
             }
             Console.WriteLine("Oblane: " + filed);
         }
