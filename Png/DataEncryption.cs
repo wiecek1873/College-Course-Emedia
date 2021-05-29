@@ -59,18 +59,30 @@ namespace EmediaWPF
             BigInteger minValue = new BigInteger(numberBytes, true);
 
             BigInteger randomNum = rng.Next(bytesLength / 2, minValue, maxValue);
+            var Tp = PrimeNumbers.NextPrimeAsync(randomNum);
+            Tp.Wait();
+            p = Tp.Result;
 
-			p = await PrimeNumbers.NextPrimeAsync(randomNum);
+            Console.WriteLine("Jest p");
 
 			randomNum = rng.Next(bytesLength / 2, minValue, maxValue);
+            var Tq = PrimeNumbers.NextPrimeAsync(randomNum);
+            Tq.Wait();
+            q = Tq.Result;
 
-            q = await PrimeNumbers.NextPrimeAsync(rng.Next(bytesLength / 2, minValue, maxValue));
+            Console.WriteLine("Jest q");
 
             if (p == q)
-                p = await PrimeNumbers.NextPrimeAsync(p);
+            {
+                var Tpp = PrimeNumbers.NextPrimeAsync(p);
+                Tpp.Wait();
+                p = Tpp.Result;
+            }
 
             n = p * q;
             totient = (p - 1) * (q - 1);
+
+            Console.WriteLine("Jeszcze EEA i koniec");
 
             do
             {
