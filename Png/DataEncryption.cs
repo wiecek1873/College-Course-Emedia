@@ -21,7 +21,6 @@ namespace EmediaWPF
         public DataEncryption()
         {
             rng = new RandomNumberGenerator();
-            PrepareKeys();
         }
 
         public DataEncryption(EncryptionSave keys)
@@ -32,14 +31,54 @@ namespace EmediaWPF
             n = keys.n;
         }
 
-        public EncryptionSave GetKeys()
+		public EncryptionSave GetKeys()
+		{
+			return new EncryptionSave
+			{
+				d = d,
+				e = e,
+				n = n
+			};
+		}
+
+        public async void PrepareKeys(int bytesLength)
         {
-            return new EncryptionSave
+            byte[] numberBytes = new byte[bytesLength/2];
+
+            for(int i = 0; i < numberBytes.Length; i++)
+			{
+                numberBytes[i] = byte.MaxValue;
+			}
+
+            numberBytes[(bytesLength / 2) - 1] = 1;
+
+            BigInteger maxValue = new BigInteger(numberBytes, true);
+
+            numberBytes[(bytesLength / 2) - 1] = 0;
+
+            BigInteger minValue = new BigInteger(numberBytes, true);
+
+            BigInteger randomNum = rng.Next(bytesLength / 2, minValue, maxValue);
+
+			p = await PrimeNumbers.NextPrimeAsync(randomNum);
+
+			randomNum = rng.Next(bytesLength / 2, minValue, maxValue);
+
+            q = await PrimeNumbers.NextPrimeAsync(rng.Next(bytesLength / 2, minValue, maxValue));
+
+            if (p == q)
+                p = await PrimeNumbers.NextPrimeAsync(p);
+
+            n = p * q;
+            totient = (p - 1) * (q - 1);
+
+            do
             {
-                d = d,
-                e = e,
-                n = n
-            };
+                e = rng.Next(bytesLength / 2, minValue,totient);
+            }
+            while (!PrimeNumbers.AreCoPrime(e, totient));
+
+            d = ExtendedEuclideanAlgorithm(e, totient);
         }
 
         public byte[] EncryptData(byte[] chunkData)
@@ -102,25 +141,7 @@ namespace EmediaWPF
             return BigInteger.ModPow(new BigInteger(encryptedData, true), d, n).ToByteArray(true);
         }
 
-        private async void PrepareKeys()
-        {
-            p = await PrimeNumbers.NextPrimeAsync(rng.Next(2, 1000, 999999999));
-            q = await PrimeNumbers.NextPrimeAsync(rng.Next(2, 1000, 999999999));
 
-            if (p == q)
-                p = await PrimeNumbers .NextPrimeAsync(p);
-
-            n = p * q;
-            totient = (p - 1) * (q - 1);
-
-            do
-            {
-                e = rng.Next(2, 1000, totient);
-            }
-            while (!PrimeNumbers.AreCoPrime(e, totient));
-
-            d = ExtendedEuclideanAlgorithm(e, totient);
-        }
 
         private BigInteger ExtendedEuclideanAlgorithm(BigInteger e, BigInteger totient)
         {

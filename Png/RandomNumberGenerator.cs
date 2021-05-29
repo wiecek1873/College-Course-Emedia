@@ -14,9 +14,9 @@ namespace EmediaWPF
         }
 
         //todo nie wiem jak to zrobic, zeby w jakimś zasiegu dawało liczbe
-        public BigInteger Next(int bytesLength, BigInteger minValue, BigInteger maxExclusiveValue)
+        public BigInteger Next(int bytesLength, BigInteger minExlusiveValue, BigInteger maxExclusiveValue)
         {
-            if (minValue > maxExclusiveValue)
+            if (minExlusiveValue > maxExclusiveValue)
                 throw new Exception();
 
             BigInteger value;
@@ -24,7 +24,7 @@ namespace EmediaWPF
             {
                 value = GetRandomNumber(bytesLength);
             }
-            while (value < minValue || maxExclusiveValue <= value);
+            while (value <= minExlusiveValue || maxExclusiveValue <= value);
 
             return value;
         }

@@ -21,78 +21,8 @@ namespace EmediaWPF
             InitializeComponent();
             ConsoleAllocator.ShowConsoleWindow();
 
-            List<int> numbersExamples = new List<int>
-            {
-                0, 1, -1, 1234, -1234, 255, -255
-            };
-
-            foreach (var number in numbersExamples)
-            {
-                var big = new BigInteger(number);
-                var arr = big.ToByteArray();
-                string txt = string.Join(" ",  arr.Select((b) => b.ToString()));
-                Console.WriteLine($"{number} = [{txt}]");
-            }
-
-            List<byte[]> bytesExamples = new List<byte[]>
-            {
-                new byte[]{147,  75, 209},
-                new byte[]{173, 213, 192},
-                new byte[]{55, 41, 222},
-                new byte[]{45},
-                new byte[]{241, 222, 153},
-                new byte[]{16}
-            };
-
-            DataEncryption dataEncryption = new DataEncryption();
-
-            Console.WriteLine("----------------------");
-            foreach (var example in bytesExamples)
-            {
-                var big = new BigInteger(example);
-                string txtEx = string.Join(" ",  example.Select((b) => b.ToString()));
-                byte[] enc = BigInteger.ModPow(big, dataEncryption.e, dataEncryption.n).ToByteArray();
-                byte[] dec = BigInteger.ModPow(new BigInteger(enc), dataEncryption.d, dataEncryption.n).ToByteArray();
-                string txtEnc = string.Join(" ",  enc.Select((b) => b.ToString()));
-                string txtDec = string.Join(" ",  dec.Select((b) => b.ToString()));
-                Console.WriteLine($"[{txtEx}] = {big} => [{txtEnc}] => [{txtDec}]");
-            }
-
-            Console.WriteLine("----------------------");
-            foreach (var example in bytesExamples)
-            {
-                var big = new BigInteger(example, true);
-                string txtEx = string.Join(" ",  example.Select((b) => b.ToString()));
-                byte[] enc = dataEncryption.Encrypt(example);
-                byte[] dec = dataEncryption.Decrypt(enc);
-                string txtEnc = string.Join(" ",  enc.Select((b) => b.ToString()));
-                string txtDec = string.Join(" ",  dec.Select((b) => b.ToString()));
-                Console.WriteLine($"[{txtEx}] = {big} => [{txtEnc}] => [{txtDec}]");
-            }
-
-            List<byte[]> dataExamples = new List<byte[]>
-            {
-                new byte[]{147,  75, 209},
-                new byte[]{173, 213, 192, 55, 41, 222, 45},
-                new byte[]{241, 222, 153, 16}
-            };
-
-            Console.WriteLine("----------------------");
-            foreach (var example in dataExamples)
-            {
-                var big = new BigInteger(example, true);
-                string txtEx = string.Join(" ",  example.Select((b) => b.ToString()));
-
-                byte[] enc = dataEncryption.EncryptData(example);
-                byte[] dec = dataEncryption.DecryptData(enc);
-
-                string txtEnc = string.Join(" ",  enc.Select((b) => b.ToString()));
-                string txtDec = string.Join(" ",  dec.Select((b) => b.ToString()));
-                Console.WriteLine($"[{txtEx}] = {big} => [{txtEnc}] => [{txtDec}]");
-            }
-
-            // TemporaryRSATest();
-        }
+			TemporaryRSATest();
+		}
 
         private void LoadFile_Click(object sender, RoutedEventArgs e)
         {
@@ -171,36 +101,37 @@ namespace EmediaWPF
             RandomNumberGenerator randomNumberGenerator = new RandomNumberGenerator();
             Random rng = new Random();
 
-            int filed = 0;
-            for (int j = 0; j < 1000; ++j)
-            {
-                DataEncryption dataEncryption = new DataEncryption();
+			int filed = 0;
+            DataEncryption dataEncryption = new DataEncryption();
+            dataEncryption.PrepareKeys(64);
+            //for (int j = 0; j < 1000; ++j)
+            //{
 
-                for (int i = 0; i < 10000; i++)
-                {
-                    // DataEncryption dataEncryption = new DataEncryption();
-                    byte[] data = randomNumberGenerator.GenerateRandomBytes(rng.Next(1, 15));
-                    byte[] enc = dataEncryption.EncryptData(data);
-                    byte[] dec = dataEncryption.DecryptData(enc);
+            //    for (int i = 0; i < 10000; i++)
+            //    {
+            //        // DataEncryption dataEncryption = new DataEncryption();
+            //        byte[] data = randomNumberGenerator.GenerateRandomBytes(rng.Next(1, 15));
+            //        byte[] enc = dataEncryption.EncryptData(data);
+            //        byte[] dec = dataEncryption.DecryptData(enc);
 
-                    if (! Comparer(data, dec))
-                    {
-                        Console.WriteLine();
-                        Console.WriteLine("Błąd dla i : " + i);
-                        Console.WriteLine("Data: " + string.Join(" ", data.Select((b) => string.Format("{0,3}", b))));
-                        Console.WriteLine("|Enc: " + string.Join(" ", enc.Select((b) => string.Format("{0,3}", b))));
-                        Console.WriteLine("Dec:  " + string.Join(" ", dec.Select((b) => string.Format("{0,3}", b))));
-                        Console.WriteLine($"e = {dataEncryption.e}");
-                        Console.WriteLine($"d = {dataEncryption.d}");
-                        Console.WriteLine($"n = {dataEncryption.n}");
-                        Console.WriteLine($"key length = {dataEncryption.KeyLength}");
-                        ++filed;
-                        break;
-                    }
-                }
-                Console.WriteLine("| Jesteśmy na j: " + j);
-            }
-            Console.WriteLine("Oblane: " + filed);
+            //        if (! Comparer(data, dec))
+            //        {
+            //            Console.WriteLine();
+            //            Console.WriteLine("Błąd dla i : " + i);
+            //            Console.WriteLine("Data: " + string.Join(" ", data.Select((b) => string.Format("{0,3}", b))));
+            //            Console.WriteLine("|Enc: " + string.Join(" ", enc.Select((b) => string.Format("{0,3}", b))));
+            //            Console.WriteLine("Dec:  " + string.Join(" ", dec.Select((b) => string.Format("{0,3}", b))));
+            //            Console.WriteLine($"e = {dataEncryption.e}");
+            //            Console.WriteLine($"d = {dataEncryption.d}");
+            //            Console.WriteLine($"n = {dataEncryption.n}");
+            //            Console.WriteLine($"key length = {dataEncryption.KeyLength}");
+            //            ++filed;
+            //            break;
+            //        }
+            //    }
+            //    Console.WriteLine("| Jesteśmy na j: " + j);
+            //}
+            //Console.WriteLine("Oblane: " + filed);
         }
 
         private bool Comparer(byte[] data, byte[] dec)
