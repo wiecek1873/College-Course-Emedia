@@ -105,37 +105,68 @@ namespace EmediaWPF
 		{
 			List<Chunk> idats = GetIDATChunks();
 
-			using (RSACryptoServiceProvider crypto = new RSACryptoServiceProvider())
+			RSACryptoServiceProvider crypto = new RSACryptoServiceProvider();
+
+
+			int keyLength = crypto.ExportParameters(false).Modulus.Length - 11;
+			foreach (var chunk in idats)
 			{
-				int keyLength = crypto.ExportParameters(false).Modulus.Length - 11;
-				foreach (var chunk in idats)
+				List<byte> partToEncrypt = new List<byte>();
+				List<byte> encryptedData = new List<byte>();
+
+				foreach (byte byteOfData in chunk.data)
 				{
-					List<byte> partToEncrypt = new List<byte>();
-					List<byte> encryptedData = new List<byte>();
-
-					foreach (byte byteOfData in chunk.data)
-					{
-						partToEncrypt.Add(byteOfData);
-						if (partToEncrypt.Count == keyLength	)
-						{
-							byte[] encrypted = crypto.Encrypt(partToEncrypt.ToArray(), false);
-							encryptedData.AddRange(encrypted);
-							partToEncrypt.Clear();
-						}
-					}
-
-					if (partToEncrypt.Count > 0)
+					partToEncrypt.Add(byteOfData);
+					if (partToEncrypt.Count == keyLength)
 					{
 						byte[] encrypted = crypto.Encrypt(partToEncrypt.ToArray(), false);
 						encryptedData.AddRange(encrypted);
 						partToEncrypt.Clear();
 					}
-
-					chunk.data = encryptedData.ToArray();
 				}
+
+				if (partToEncrypt.Count > 0)
+				{
+					byte[] encrypted = crypto.Encrypt(partToEncrypt.ToArray(), false);
+					encryptedData.AddRange(encrypted);
+					partToEncrypt.Clear();
+				}
+
+				chunk.data = encryptedData.ToArray();
+				chunk.length = (uint)chunk.data.Length;
 			}
 
+
 			Save(path, fileName);
+
+			foreach (var chunk in idats)
+			{
+				List<byte> partToDecrypt = new List<byte>();
+				List<byte> decryptedData = new List<byte>();
+
+				foreach (byte byteOfData in chunk.data)
+				{
+					partToDecrypt.Add(byteOfData);
+					if (partToDecrypt.Count == crypto.ExportParameters(false).Modulus.Length)
+					{
+						byte[] encrypted = crypto.Decrypt(partToDecrypt.ToArray(), false);
+						decryptedData.AddRange(encrypted);
+						partToDecrypt.Clear();
+					}
+				}
+
+				if (partToDecrypt.Count > 0)
+				{
+					byte[] encrypted = crypto.Decrypt(partToDecrypt.ToArray(), false);
+					decryptedData.AddRange(encrypted);
+					partToDecrypt.Clear();
+				}
+
+				chunk.data = decryptedData.ToArray();
+				chunk.length = (uint)chunk.data.Length;
+			}
+
+			Save(path, "PoDeszyfrowaniu.png");
 		}
 
 		private void EncryptIDAT()
