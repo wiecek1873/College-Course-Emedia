@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace EmediaWPF
 {
@@ -100,6 +101,43 @@ namespace EmediaWPF
 			DecryptIDAT();
 		}
 
+		public void EncryptAndSaveCSP(string path, string fileName)
+		{
+			List<Chunk> idats = GetIDATChunks();
+
+			using (RSACryptoServiceProvider crypto = new RSACryptoServiceProvider())
+			{
+				int keyLength = crypto.ExportParameters(false).Modulus.Length - 11;
+				foreach (var chunk in idats)
+				{
+					List<byte> partToEncrypt = new List<byte>();
+					List<byte> encryptedData = new List<byte>();
+
+					foreach (byte byteOfData in chunk.data)
+					{
+						partToEncrypt.Add(byteOfData);
+						if (partToEncrypt.Count == keyLength	)
+						{
+							byte[] encrypted = crypto.Encrypt(partToEncrypt.ToArray(), false);
+							encryptedData.AddRange(encrypted);
+							partToEncrypt.Clear();
+						}
+					}
+
+					if (partToEncrypt.Count > 0)
+					{
+						byte[] encrypted = crypto.Encrypt(partToEncrypt.ToArray(), false);
+						encryptedData.AddRange(encrypted);
+						partToEncrypt.Clear();
+					}
+
+					chunk.data = encryptedData.ToArray();
+				}
+			}
+
+			Save(path, fileName);
+		}
+
 		private void EncryptIDAT()
 		{
 			List<Chunk> idats = GetIDATChunks();
@@ -115,7 +153,7 @@ namespace EmediaWPF
 			}
 
 			var tEXt = iTXt.Create(string.Join(",", idataLengths.Select((c) => c.ToString())));
-            chunks.Insert(chunks.Count-2, tEXt);
+			chunks.Insert(chunks.Count - 2, tEXt);
 		}
 
 		private void DecryptIDAT()
@@ -217,25 +255,29 @@ namespace EmediaWPF
 		private static uint Crc32(byte[] stream, int offset, int length, uint crc)
 		{
 			uint c;
-			if(crcTable==null){
-				crcTable=new uint[256];
-				for(uint n=0;n<=255;n++){
+			if (crcTable == null)
+			{
+				crcTable = new uint[256];
+				for (uint n = 0; n <= 255; n++)
+				{
 					c = n;
-					for(var k=0;k<=7;k++){
-						if((c & 1) == 1)
-							c = 0xEDB88320^((c>>1)&0x7FFFFFFF);
+					for (var k = 0; k <= 7; k++)
+					{
+						if ((c & 1) == 1)
+							c = 0xEDB88320 ^ ((c >> 1) & 0x7FFFFFFF);
 						else
-							c = ((c>>1)&0x7FFFFFFF);
+							c = ((c >> 1) & 0x7FFFFFFF);
 					}
 					crcTable[n] = c;
 				}
 			}
-			c = crc^0xffffffff;
-			var endOffset=offset+length;
-			for(var i=offset;i<endOffset;i++){
-				c = crcTable[(c^stream[i]) & 255]^((c>>8)&0xFFFFFF);
+			c = crc ^ 0xffffffff;
+			var endOffset = offset + length;
+			for (var i = offset; i < endOffset; i++)
+			{
+				c = crcTable[(c ^ stream[i]) & 255] ^ ((c >> 8) & 0xFFFFFF);
 			}
-			return c^0xffffffff;
+			return c ^ 0xffffffff;
 		}
 	}
 }
