@@ -12,6 +12,7 @@ namespace EmediaWPF
         {
             var file = new StreamReader(FILE_NAME);
             var json = file.ReadToEnd();
+            file.Close();
             return JsonSerializer.Deserialize<EncryptionSave>(json);
         }
 
@@ -20,6 +21,7 @@ namespace EmediaWPF
             var json = JsonSerializer.Serialize<EncryptionSave>(keys);
             var file = new StreamWriter(FILE_NAME);
             file.Write(json);
+            file.Close();
         }
     }
 }

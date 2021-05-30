@@ -19,9 +19,14 @@ namespace EmediaWPF
         public MainWindow()
         {
             InitializeComponent();
-            ConsoleAllocator.ShowConsoleWindow();
+            //ConsoleAllocator.ShowConsoleWindow();
 
-			TemporaryRSATest();
+            //TemporaryRSATest();
+            DataEncryption dataEncryption = new DataEncryption();
+            dataEncryption.PrepareKeys(8);
+            SaveManager.Instance.SaveKeys(dataEncryption.GetKeys());
+
+            DataEncryption xd = new DataEncryption( SaveManager.Instance.LoadKeys());
 		}
 
         private void LoadFile_Click(object sender, RoutedEventArgs e)

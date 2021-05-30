@@ -6,8 +6,8 @@ namespace EmediaWPF
     [Serializable]
     public class EncryptionSave
     {
-        public BigInteger d { get; set; }
-        public BigInteger e { get; set; }
-        public BigInteger n { get; set; }
+        public byte[] d { get; set; }
+        public byte[] e { get; set; }
+        public byte[] n { get; set; }
     }
 }

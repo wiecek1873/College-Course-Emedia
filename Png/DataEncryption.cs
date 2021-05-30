@@ -26,22 +26,22 @@ namespace EmediaWPF
         public DataEncryption(EncryptionSave keys)
         {
             rng = new RandomNumberGenerator();
-            d = keys.d;
-            e = keys.e;
-            n = keys.n;
+            d = new BigInteger(keys.d,true);
+            e = new BigInteger(keys.e,true);
+            n = new BigInteger(keys.n,true);
         }
 
 		public EncryptionSave GetKeys()
 		{
 			return new EncryptionSave
 			{
-				d = d,
-				e = e,
-				n = n
+				d = d.ToByteArray(true),
+				e = e.ToByteArray(true),
+				n = n.ToByteArray(true)
 			};
 		}
 
-        public async void PrepareKeys(int bytesLength)
+        public void PrepareKeys(int bytesLength)
         {
             byte[] numberBytes = new byte[bytesLength/2];
 
