@@ -10,11 +10,11 @@ namespace EmediaWPF
         private const string ChildPrefix = "> ";
         private const string AttributePrefix = "  | ";
 
-        public static string ParseAndPrint(string Text)
+        public static string ParseAndPrint(string text)
         {
-            XmlDocument xml = ExtractXmp(Text);
+            XmlDocument xml = ExtractXmp(text);
             if (xml == null)
-                return "Invalid XMP format";
+                return "Invalid XMP format: " + text;
             else
                 return PrintXmlRecurrence(xml.DocumentElement, PrefixOfRow);
         }

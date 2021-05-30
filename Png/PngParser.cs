@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace EmediaWPF
 {
@@ -103,22 +103,35 @@ namespace EmediaWPF
 		private void EncryptIDAT()
 		{
 			List<Chunk> idats = GetIDATChunks();
+			List<ulong> idataLengths = new List<ulong>();
 
 			foreach (var chunk in idats)
 			{
+				Console.WriteLine("o " + chunk.length);
+				idataLengths.Add(chunk.length);
 				chunk.data = DataEncryption.Instance.EncryptData(chunk.data);
 				chunk.length = (uint)chunk.data.Length;
+				Console.WriteLine("e " + chunk.length);
 			}
+
+			var tEXt = iTXt.Create(string.Join(",", idataLengths.Select((c) => c.ToString())));
+            chunks.Insert(chunks.Count-2, tEXt);
 		}
 
 		private void DecryptIDAT()
 		{
 			List<Chunk> idats = GetIDATChunks();
+			var tEXt = chunks.Last((c) => c is iTXt) as iTXt;
+			List<uint> idataLength = new List<uint>(tEXt.Text.Split(",").Select((l) => uint.Parse(l)));
 
+			int i = 0;
 			foreach (var chunk in idats)
 			{
 				chunk.data = DataEncryption.Instance.DecryptData(chunk.data);
+				Array.Resize<byte>(ref chunk.data, (int)idataLength[i]);
 				chunk.length = (uint)chunk.data.Length;
+				Console.WriteLine("d " + chunk.length);
+				++i;
 			}
 		}
 
@@ -191,6 +204,38 @@ namespace EmediaWPF
 		private uint ReadUint32()
 		{
 			return DataReader.ReadUint32(fileReader.ReadBytes(4));
+		}
+
+		static uint[] crcTable;
+
+		// Stores a running CRC (initialized with the CRC of "IDAT" string). When
+		// you write this to the PNG, write as a big-endian value
+		static uint idatCrc = Crc32(new byte[] { (byte)'I', (byte)'D', (byte)'A', (byte)'T' }, 0, 4, 0);
+
+		// Call this function with the compressed image bytes, 
+		// passing in idatCrc as the last parameter
+		private static uint Crc32(byte[] stream, int offset, int length, uint crc)
+		{
+			uint c;
+			if(crcTable==null){
+				crcTable=new uint[256];
+				for(uint n=0;n<=255;n++){
+					c = n;
+					for(var k=0;k<=7;k++){
+						if((c & 1) == 1)
+							c = 0xEDB88320^((c>>1)&0x7FFFFFFF);
+						else
+							c = ((c>>1)&0x7FFFFFFF);
+					}
+					crcTable[n] = c;
+				}
+			}
+			c = crc^0xffffffff;
+			var endOffset=offset+length;
+			for(var i=offset;i<endOffset;i++){
+				c = crcTable[(c^stream[i]) & 255]^((c>>8)&0xFFFFFF);
+			}
+			return c^0xffffffff;
 		}
 	}
 }
