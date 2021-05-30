@@ -21,7 +21,7 @@ namespace EmediaWPF
 
         public static void WriteChunk(this BinaryWriter writer, Chunk chunk)
         {
-            writer.WriteUlong(chunk.length);
+            writer.Write(BitConverter.GetBytes(chunk.length).Reverse().ToArray());
             writer.Write(chunk.type);
             writer.Write(chunk.data);
             writer.Write(chunk.crc);

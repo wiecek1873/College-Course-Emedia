@@ -18,19 +18,6 @@ namespace EmediaWPF
 
         public int KeyLength {get => n.ToByteArray().Length;} // todo
 
-        public DataEncryption()
-        {
-            rng = new RandomNumberGenerator();
-        }
-
-        public DataEncryption(EncryptionSave keys)
-        {
-            rng = new RandomNumberGenerator();
-            d = new BigInteger(keys.d,true);
-            e = new BigInteger(keys.e,true);
-            n = new BigInteger(keys.n,true);
-        }
-
 		public EncryptionSave GetKeys()
 		{
 			return new EncryptionSave
@@ -41,8 +28,17 @@ namespace EmediaWPF
 			};
 		}
 
+        public void SetKeys(EncryptionSave keys)
+		{
+            d = new BigInteger(keys.d, true);
+            e = new BigInteger(keys.e, true);
+            n = new BigInteger(keys.n, true);
+        }
+
         public void PrepareKeys(int bytesLength)
         {
+            rng = new RandomNumberGenerator();
+
             byte[] numberBytes = new byte[bytesLength/2];
 
             for(int i = 0; i < numberBytes.Length; i++)
@@ -122,25 +118,91 @@ namespace EmediaWPF
             return encryptedData.ToArray();
         }
 
-        public byte[] DecryptData(byte[] chunkData)
-        {
-            int dataLength = KeyLength - 1;
-            List<byte> partToDecrypt = new List<byte>();
-            List<byte> decryptedData = new List<byte>();
+		public byte[] DecryptData(byte[] chunkData)
+		{
+			int dataLength = KeyLength - 1;
+			List<byte> partToDecrypt = new List<byte>();
+			List<byte> decryptedData = new List<byte>();
 
-            foreach (byte data in chunkData)
+			foreach (byte data in chunkData)
+			{
+				partToDecrypt.Add(data);
+				if (partToDecrypt.Count == KeyLength)
+				{
+					byte[] decrypted = Decrypt(partToDecrypt.ToArray());
+					Array.Resize<byte>(ref decrypted, dataLength);
+					decryptedData.AddRange(decrypted);
+					partToDecrypt.Clear();
+				}
+			}
+
+			return decryptedData.ToArray();
+		}
+
+		public void KeyTest()
+		{
+			RandomNumberGenerator randomNumberGenerator = new RandomNumberGenerator();
+            Random rng = new Random();
+
+			int filed = 0;
+
+			for (int j = 0; j < 1000; ++j)
+			{
+
+				for (int i = 0; i < 1000; i++)
+				{
+					// DataEncryption dataEncryption = new DataEncryption();
+					byte[] data = randomNumberGenerator.GenerateRandomBytes(rng.Next(1000, 10000));
+					byte[] enc = EncryptData(data);
+					byte[] dec = DecryptData(enc);
+
+					if (!Comparer(data, dec))
+					{
+						Console.WriteLine();
+						Console.WriteLine("Błąd dla i : " + i);
+						Console.WriteLine("Data: " + string.Join(" ", data.Select((b) => string.Format("{0,3}", b))));
+						Console.WriteLine("|Enc: " + string.Join(" ", enc.Select((b) => string.Format("{0,3}", b))));
+						Console.WriteLine("Dec:  " + string.Join(" ", dec.Select((b) => string.Format("{0,3}", b))));
+						Console.WriteLine($"e = {e}");
+						Console.WriteLine($"d = {d}");
+						Console.WriteLine($"n = {n}");
+						Console.WriteLine($"key length = {KeyLength}");
+						++filed;
+						break;
+					}
+				}
+				Console.WriteLine("| Jesteśmy na j: " + j);
+			}
+			Console.WriteLine("Oblane: " + filed);
+		}
+
+        private bool Comparer(byte[] data, byte[] dec)
+        {
+            if (dec.Length < data.Length)
             {
-                partToDecrypt.Add(data);
-                if (partToDecrypt.Count == KeyLength)
-                {
-                    byte[] decrypted = Decrypt(partToDecrypt.ToArray());
-                    Array.Resize<byte>(ref decrypted, dataLength);
-                    decryptedData.AddRange(decrypted);
-                    partToDecrypt.Clear();
-                }
+                Console.WriteLine("mniejsza dlugosc! " + dec.Length + " " + data.Length);
+                return false;
             }
 
-            return decryptedData.ToArray();
+            for (int i = 0; i < dec.Length; ++i)
+                if (i < data.Length)
+                {
+                    if (data[i] != dec[i])
+                    {
+                        Console.WriteLine("rozne wartosci!");
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (dec[i] != 0)
+                    {
+                        Console.WriteLine("nie zera na koncu :(");
+                        return false;
+                    }
+                }
+
+            return true;
         }
 
         public byte[] Encrypt(byte[] data)
