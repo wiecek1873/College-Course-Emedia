@@ -49,6 +49,9 @@ namespace EmediaWPF
 					var xd = new PngParser("test.png");
                     xd.Decrypt();
                     xd.Save("", "PoDeszyfr.png");
+					var view = new PngParser("test.png");
+                    view.Cut();
+                    view.Save("", "Zaszyfrowany.png");
                 }
 
 				var uri = new Uri(dlg.FileName);

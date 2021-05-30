@@ -73,7 +73,7 @@ namespace EmediaWPF
 			writer.Close();
 		}
 
-		public void SaveWithoutMetadata(string path, string fileName)
+        public void SaveWithoutMetadata(string path, string fileName)
 		{
 			BinaryWriter writer = new BinaryWriter(File.Open(path + fileName, FileMode.Create));
 			writer.Write(PngSignature);
@@ -127,13 +127,55 @@ namespace EmediaWPF
 			int i = 0;
 			foreach (var chunk in idats)
 			{
+				List<byte> data = new List<byte>();
+				data.AddRange(BitConverter.GetBytes(chunk.length));
+				data.AddRange(chunk.type.Select((c) => (byte)c));
+				data.AddRange(chunk.data);
+				data.AddRange(chunk.crc);
+
+				crcTable = null;
+				uint idatCrc = Crc32(data.ToArray(), 4, (int)chunk.length-4, 0);
+				Console.WriteLine("v " + chunk.length);
+				Console.WriteLine("crc  " + string.Join(" ", chunk.crc));
+				crcTable = null;
+				idatCrc = Crc32(data.ToArray(), 0, (int)chunk.length, 0);
+				Console.WriteLine("icrc  " + string.Join(" ", BitConverter.GetBytes(idatCrc)));
+				Console.WriteLine("icrc2  " + string.Join(" ", BitConverter.GetBytes(idatCrc)));
+				// Console.WriteLine(string.Join(" ", crcTable));
+
+
 				chunk.data = DataEncryption.Instance.DecryptData(chunk.data);
 				Array.Resize<byte>(ref chunk.data, (int)idataLength[i]);
 				chunk.length = (uint)chunk.data.Length;
 				Console.WriteLine("d " + chunk.length);
 				++i;
 			}
+
+			chunks.Remove(tEXt);
 		}
+
+        internal void Cut()
+        {
+			List<Chunk> idats = GetIDATChunks();
+			var tEXt = chunks.Last((c) => c is iTXt) as iTXt;
+			List<uint> idataLength = new List<uint>(tEXt.Text.Split(",").Select((l) => uint.Parse(l)));
+
+			int i = 0;
+			foreach (var chunk in idats)
+			{
+				Array.Resize<byte>(ref chunk.data, (int)idataLength[i]);
+				chunk.length = (uint)chunk.data.Length;
+				// idatCrc = Crc32(chunk.data, 4, (int)chunk.length-4, 0);
+				// Console.WriteLine("v " + chunk.length);
+				// Console.WriteLine(string.Join(" ", chunk.crc));
+				// Console.WriteLine(string.Join(" ", BitConverter.GetBytes(idatCrc)));
+				// Console.WriteLine(string.Join(" ", crcTable));
+				// chunk.crc = BitConverter.GetBytes(idatCrc);
+				++i;
+			}
+
+			chunks.Remove(tEXt);
+        }
 
 		private void AssertPng()
 		{
@@ -210,9 +252,9 @@ namespace EmediaWPF
 
 		// Stores a running CRC (initialized with the CRC of "IDAT" string). When
 		// you write this to the PNG, write as a big-endian value
-		static uint idatCrc = Crc32(new byte[] { (byte)'I', (byte)'D', (byte)'A', (byte)'T' }, 0, 4, 0);
+		static uint idatCrc;
 
-		// Call this function with the compressed image bytes, 
+		// Call this function with the compressed image bytes,
 		// passing in idatCrc as the last parameter
 		private static uint Crc32(byte[] stream, int offset, int length, uint crc)
 		{
