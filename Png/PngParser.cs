@@ -109,11 +109,9 @@ namespace EmediaWPF
 
 			foreach (var chunk in idats)
 			{
-				Console.WriteLine("o " + chunk.length);
 				idataLengths.Add(chunk.length);
 				chunk.data = DataEncryption.Instance.EncryptData(chunk.data);
 				chunk.length = (uint)chunk.data.Length;
-				Console.WriteLine("e " + chunk.length);
 			}
 
 			var tEXt = iTXt.Create(string.Join(",", idataLengths.Select((c) => c.ToString())));
@@ -129,27 +127,9 @@ namespace EmediaWPF
 			int i = 0;
 			foreach (var chunk in idats)
 			{
-				List<byte> data = new List<byte>();
-				data.AddRange(BitConverter.GetBytes(chunk.length));
-				data.AddRange(chunk.type.Select((c) => (byte)c));
-				data.AddRange(chunk.data);
-				data.AddRange(chunk.crc);
-
-				crcTable = null;
-				uint idatCrc = Crc32(data.ToArray(), 4, (int)chunk.length-4, 0);
-				Console.WriteLine("v " + chunk.length);
-				Console.WriteLine("crc  " + string.Join(" ", chunk.crc));
-				crcTable = null;
-				idatCrc = Crc32(data.ToArray(), 0, (int)chunk.length, 0);
-				Console.WriteLine("icrc  " + string.Join(" ", BitConverter.GetBytes(idatCrc)));
-				Console.WriteLine("icrc2  " + string.Join(" ", BitConverter.GetBytes(idatCrc)));
-				// Console.WriteLine(string.Join(" ", crcTable));
-
-
 				chunk.data = DataEncryption.Instance.DecryptData(chunk.data);
 				Array.Resize<byte>(ref chunk.data, (int)idataLength[i]);
 				chunk.length = (uint)chunk.data.Length;
-				Console.WriteLine("d " + chunk.length);
 				++i;
 			}
 
@@ -160,7 +140,6 @@ namespace EmediaWPF
         {
 			var ihdr = chunks.Where((c) => c is IHDR).First() as IHDR;
 			int width = (int)ihdr.Width;
-			int height = (int)ihdr.Height;
 
 			Color color = Color.Aqua;
 			List<byte> idataData = new List<byte>();
@@ -168,6 +147,8 @@ namespace EmediaWPF
 			{
 				idataData.AddRange(idat.data);
 			}
+
+			int height = idataData.Count / width;
 
 			using (Bitmap b = new Bitmap(width, height)) {
 				for (int y = 0; y < height; y++)
