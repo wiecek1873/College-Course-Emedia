@@ -50,7 +50,7 @@ namespace EmediaWPF
                     xd.Decrypt();
                     xd.Save("", "PoDeszyfr.png");
 					var view = new PngParser("test.png");
-                    view.Cut();
+                    view.Rewrite();
                     view.Save("", "Zaszyfrowany.png");
                 }
 

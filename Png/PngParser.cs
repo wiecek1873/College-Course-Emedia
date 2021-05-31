@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 
@@ -154,27 +156,30 @@ namespace EmediaWPF
 			chunks.Remove(tEXt);
 		}
 
-        internal void Cut()
+        internal void Rewrite()
         {
-			List<Chunk> idats = GetIDATChunks();
-			var tEXt = chunks.Last((c) => c is iTXt) as iTXt;
-			List<uint> idataLength = new List<uint>(tEXt.Text.Split(",").Select((l) => uint.Parse(l)));
+			var ihdr = chunks.Where((c) => c is IHDR).First() as IHDR;
+			int width = (int)ihdr.Width;
+			int height = (int)ihdr.Height;
 
-			int i = 0;
-			foreach (var chunk in idats)
+			Color color = Color.Aqua;
+			List<byte> idataData = new List<byte>();
+			foreach (var idat in GetIDATChunks())
 			{
-				Array.Resize<byte>(ref chunk.data, (int)idataLength[i]);
-				chunk.length = (uint)chunk.data.Length;
-				// idatCrc = Crc32(chunk.data, 4, (int)chunk.length-4, 0);
-				// Console.WriteLine("v " + chunk.length);
-				// Console.WriteLine(string.Join(" ", chunk.crc));
-				// Console.WriteLine(string.Join(" ", BitConverter.GetBytes(idatCrc)));
-				// Console.WriteLine(string.Join(" ", crcTable));
-				// chunk.crc = BitConverter.GetBytes(idatCrc);
-				++i;
+				idataData.AddRange(idat.data);
 			}
 
-			chunks.Remove(tEXt);
+			using (Bitmap b = new Bitmap(width, height)) {
+				for (int y = 0; y < height; y++)
+				{
+					for (int x = 0; x < width; x++)
+					{
+						int place = (y*height + x) % idataData.Count;
+                        b.SetPixel(x, y, Color.FromArgb(idataData[place], idataData[place], idataData[place]));
+					}
+				}
+				b.Save(@"PodgladZaszyfrowegoPliku.png", ImageFormat.Png);
+			}
         }
 
 		private void AssertPng()
