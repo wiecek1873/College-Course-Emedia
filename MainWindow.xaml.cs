@@ -45,15 +45,30 @@ namespace EmediaWPF
 				{
 					Console.Clear();
 					png.PrintChunks();
-					png.Encrypt();
-                    png.Save("", "test.png");
-					var xd = new PngParser("test.png");
-                    xd.Decrypt();
-                    xd.Save("", "PoDeszyfr.png");
-					var view = new PngParser("test.png");
-                    view.Rewrite();
-                    view.Rewrite2();
-                    view.Save("", "Zaszyfrowany.png");
+					png.EncryptIDAT_ECB();
+                    png.Save("", "ecb.png");
+
+					var ecb = new PngParser("ecb.png");
+                    ecb.DecryptIDAT_ECB();
+                    ecb.Save("", "PoDeszyfrowaniuECB.png");
+
+                    var png2 = new PngParser(dlg.FileName);
+                    png2.EncryptIDAT_CBC();
+                    png.Save("", "cbc.png");
+
+					var cbc = new PngParser("cbc.png");
+                    cbc.DecryptIDAT_CBC();
+                    cbc.Save("", "PoDeszyfrowaniuCBC.png");
+
+                    var view = new PngParser("ecb.png");
+                    view.Rewrite("PodgladECB.png");
+                    // view.Rewrite2();
+                    // view.Save("", "Zaszyfrowany.png");
+
+                    var view2 = new PngParser("cbc.png");
+                    view2.Rewrite("PodgladCBC.png");
+                    // view2.Rewrite2();
+                    // view2.Save("", "Zaszyfrowany.png");
                 }
 
 				var uri = new Uri(dlg.FileName);

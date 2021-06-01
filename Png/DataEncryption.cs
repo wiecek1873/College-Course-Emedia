@@ -139,6 +139,78 @@ namespace EmediaWPF
 			return decryptedData.ToArray();
 		}
 
+        public byte[] EncryptDataCBC(byte[] chunkData)
+        {
+            int dataLength = KeyLength - 1;
+            List<byte> partToEncrypt = new List<byte>();
+            List<byte> encryptedData = new List<byte>();
+            byte[] initVector = new byte[dataLength];
+
+            for (int i = 0; i < dataLength; i++)
+                initVector[i] = 0;
+
+            foreach (byte byteOfData in chunkData)
+            {
+                partToEncrypt.Add(byteOfData);
+                if (partToEncrypt.Count == dataLength)
+                {
+                    byte[] toEncrypt = Xor(partToEncrypt.ToArray(), initVector);
+                    byte[] encrypted = Encrypt(toEncrypt);
+                    Array.Resize<byte>(ref encrypted, KeyLength);
+                    Array.Copy(encrypted, initVector, dataLength);
+					encryptedData.AddRange(encrypted);
+                    partToEncrypt.Clear();
+                }
+            }
+
+            if (partToEncrypt.Count > 0)
+            {
+                byte[] toEncrypt = Xor(partToEncrypt.ToArray(), initVector);
+                byte[] encrypted = Encrypt(toEncrypt);
+                Array.Resize<byte>(ref encrypted, KeyLength);
+                Array.Copy(encrypted, initVector, dataLength);
+                encryptedData.AddRange(encrypted);
+                partToEncrypt.Clear();
+            }
+
+            return encryptedData.ToArray();
+        }
+
+        private byte[] Xor(byte[] vs, byte[] initVector)
+        {
+            for (int i = 0; i < vs.Length; i++)
+                vs[i] = (byte) (vs[i] ^ initVector[i]);
+            return vs;
+        }
+
+        public byte[] DecryptDataCBC(byte[] chunkData)
+		{
+			int dataLength = KeyLength - 1;
+			List<byte> partToDecrypt = new List<byte>();
+			List<byte> decryptedData = new List<byte>();
+            byte[] initVector = new byte[dataLength];
+
+            for (int i = 0; i < dataLength; i++)
+                initVector[i] = 0;
+
+			foreach (byte data in chunkData)
+			{
+				partToDecrypt.Add(data);
+				if (partToDecrypt.Count == KeyLength)
+				{
+                    byte[] toDecrypt = partToDecrypt.ToArray();
+                    Array.Copy(toDecrypt, initVector, dataLength);
+					byte[] decrypted = Decrypt(toDecrypt);
+					Array.Resize<byte>(ref decrypted, dataLength);
+                    decrypted = Xor(decrypted, initVector);
+					decryptedData.AddRange(decrypted);
+					partToDecrypt.Clear();
+				}
+			}
+
+			return decryptedData.ToArray();
+		}
+
 		public void KeyTest()
 		{
 			RandomNumberGenerator randomNumberGenerator = new RandomNumberGenerator();

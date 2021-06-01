@@ -92,17 +92,7 @@ namespace EmediaWPF
 			writer.Close();
 		}
 
-		public void Encrypt()
-		{
-			EncryptIDAT();
-		}
-
-		public void Decrypt()
-		{
-			DecryptIDAT();
-		}
-
-		private void EncryptIDAT()
+		public void EncryptIDAT_ECB()
 		{
 			List<Chunk> idats = GetIDATChunks();
 			List<ulong> idataLengths = new List<ulong>();
@@ -118,7 +108,7 @@ namespace EmediaWPF
             chunks.Insert(chunks.Count-2, tEXt);
 		}
 
-		private void DecryptIDAT()
+		public void DecryptIDAT_ECB()
 		{
 			List<Chunk> idats = GetIDATChunks();
 			var tEXt = chunks.Last((c) => c is iTXt) as iTXt;
@@ -136,7 +126,41 @@ namespace EmediaWPF
 			chunks.Remove(tEXt);
 		}
 
-        internal void Rewrite()
+		public void EncryptIDAT_CBC()
+		{
+			List<Chunk> idats = GetIDATChunks();
+			List<ulong> idataLengths = new List<ulong>();
+
+			foreach (var chunk in idats)
+			{
+				idataLengths.Add(chunk.length);
+				chunk.data = DataEncryption.Instance.EncryptDataCBC(chunk.data);
+				chunk.length = (uint)chunk.data.Length;
+			}
+
+			var tEXt = iTXt.Create(string.Join(",", idataLengths.Select((c) => c.ToString())));
+            chunks.Insert(chunks.Count-2, tEXt);
+		}
+
+		public void DecryptIDAT_CBC()
+		{
+			List<Chunk> idats = GetIDATChunks();
+			var tEXt = chunks.Last((c) => c is iTXt) as iTXt;
+			List<uint> idataLength = new List<uint>(tEXt.Text.Split(",").Select((l) => uint.Parse(l)));
+
+			int i = 0;
+			foreach (var chunk in idats)
+			{
+				chunk.data = DataEncryption.Instance.DecryptDataCBC(chunk.data);
+				Array.Resize<byte>(ref chunk.data, (int)idataLength[i]);
+				chunk.length = (uint)chunk.data.Length;
+				++i;
+			}
+
+			chunks.Remove(tEXt);
+		}
+
+        internal void Rewrite(string fileName)
         {
 			var ihdr = chunks.Where((c) => c is IHDR).First() as IHDR;
 			int width = (int)ihdr.Width;
@@ -159,7 +183,7 @@ namespace EmediaWPF
                         b.SetPixel(x, y, Color.FromArgb(idataData[place], idataData[place], idataData[place]));
 					}
 				}
-				b.Save(@"PodgladZaszyfrowegoPliku.png", ImageFormat.Png);
+				b.Save(fileName, ImageFormat.Png);
 			}
         }
 
