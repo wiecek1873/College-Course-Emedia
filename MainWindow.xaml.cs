@@ -21,8 +21,43 @@ namespace EmediaWPF
             InitializeComponent();
 			ConsoleAllocator.ShowConsoleWindow();
 
-			//TemporaryRSATest();
+			TemporaryRSATest();
 		}
+
+        private void TemporaryRSATest()
+        {
+            DataEncryption.Instance.SetKeys(SaveManager.Instance.LoadKeys());
+            byte[] example = new byte[]{12, 23, 45, 123, 43, 35, 244, 02, 254, 132, 99, 254, 132, 12, 213, 245, 23, 43, 5, 244, 102, 254, 12, 9, 25, 2};
+            byte[] xd = example.Select((b) => (byte)(b^1)).ToArray();
+            byte[] xdd = xd.Select((b) => (byte)(b^1)).ToArray();
+            byte[] encryptedECB = DataEncryption.Instance.EncryptDataECB(example);
+            byte[] decryptedECB = DataEncryption.Instance.DecryptDataECB(encryptedECB);
+            byte[] encryptedCBC = DataEncryption.Instance.EncryptDataCBC(example);
+            byte[] decryptedCBC = DataEncryption.Instance.DecryptDataCBC(encryptedCBC);
+            Console.WriteLine("example       : " + string.Join(" ", example));
+            Console.WriteLine("xd            : " + string.Join(" ", xd));
+            Console.WriteLine("xdd           : " + string.Join(" ", xdd));
+            Console.WriteLine("encryptedECB  : " + string.Join(" ", encryptedECB));
+            Console.WriteLine("decryptedECB  : " + string.Join(" ", decryptedECB));
+            Console.WriteLine("encryptedCBC  : " + string.Join(" ", encryptedCBC));
+            Console.WriteLine("decryptedCBC  : " + string.Join(" ", decryptedCBC));
+
+            DataEncryption.Instance.SetKeys(SaveManager.Instance.LoadKeys());
+            example = new byte[]{12, 23, 45, 123, 43, 35, 244, 0, 0, 0, 02};
+            xd = example.Select((b) => (byte)(b^1)).ToArray();
+            xdd = xd.Select((b) => (byte)(b^1)).ToArray();
+            encryptedECB = DataEncryption.Instance.EncryptDataECB(example);
+            decryptedECB = DataEncryption.Instance.DecryptDataECB(encryptedECB);
+            encryptedCBC = DataEncryption.Instance.EncryptDataCBC(example);
+            decryptedCBC = DataEncryption.Instance.DecryptDataCBC(encryptedCBC);
+            Console.WriteLine("_example      : " + string.Join(" ", example));
+            Console.WriteLine("_xd           : " + string.Join(" ", xd));
+            Console.WriteLine("_xdd          : " + string.Join(" ", xdd));
+            Console.WriteLine("_encryptedECB : " + string.Join(" ", encryptedECB));
+            Console.WriteLine("_decryptedECB : " + string.Join(" ", decryptedECB));
+            Console.WriteLine("_encryptedCBC : " + string.Join(" ", encryptedCBC));
+            Console.WriteLine("_decryptedCBC : " + string.Join(" ", decryptedCBC));
+        }
 
         private void LoadFile_Click(object sender, RoutedEventArgs e)
         {
@@ -54,7 +89,7 @@ namespace EmediaWPF
 
                     var png2 = new PngParser(dlg.FileName);
                     png2.EncryptIDAT_CBC();
-                    png.Save("", "cbc.png");
+                    png2.Save("", "cbc.png");
 
 					var cbc = new PngParser("cbc.png");
                     cbc.DecryptIDAT_CBC();

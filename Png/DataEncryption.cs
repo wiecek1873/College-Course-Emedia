@@ -144,10 +144,10 @@ namespace EmediaWPF
             int dataLength = KeyLength - 1;
             List<byte> partToEncrypt = new List<byte>();
             List<byte> encryptedData = new List<byte>();
-            byte[] initVector = new byte[dataLength];
+            byte[] initVector = new byte[KeyLength];
 
-            for (int i = 0; i < dataLength; i++)
-                initVector[i] = 0;
+            for (int i = 0; i < KeyLength; i++)
+                initVector[i] = (byte)i;
 
             foreach (byte byteOfData in chunkData)
             {
@@ -157,7 +157,7 @@ namespace EmediaWPF
                     byte[] toEncrypt = Xor(partToEncrypt.ToArray(), initVector);
                     byte[] encrypted = Encrypt(toEncrypt);
                     Array.Resize<byte>(ref encrypted, KeyLength);
-                    Array.Copy(encrypted, initVector, dataLength);
+                    Array.Copy(encrypted, initVector, KeyLength);
 					encryptedData.AddRange(encrypted);
                     partToEncrypt.Clear();
                 }
@@ -168,7 +168,7 @@ namespace EmediaWPF
                 byte[] toEncrypt = Xor(partToEncrypt.ToArray(), initVector);
                 byte[] encrypted = Encrypt(toEncrypt);
                 Array.Resize<byte>(ref encrypted, KeyLength);
-                Array.Copy(encrypted, initVector, dataLength);
+                Array.Copy(encrypted, initVector, KeyLength);
                 encryptedData.AddRange(encrypted);
                 partToEncrypt.Clear();
             }
@@ -188,10 +188,10 @@ namespace EmediaWPF
 			int dataLength = KeyLength - 1;
 			List<byte> partToDecrypt = new List<byte>();
 			List<byte> decryptedData = new List<byte>();
-            byte[] initVector = new byte[dataLength];
+            byte[] initVector = new byte[KeyLength];
 
-            for (int i = 0; i < dataLength; i++)
-                initVector[i] = 0;
+            for (int i = 0; i < KeyLength; i++)
+                initVector[i] = (byte)i;
 
 			foreach (byte data in chunkData)
 			{
@@ -199,10 +199,10 @@ namespace EmediaWPF
 				if (partToDecrypt.Count == KeyLength)
 				{
                     byte[] toDecrypt = partToDecrypt.ToArray();
-                    Array.Copy(toDecrypt, initVector, dataLength);
 					byte[] decrypted = Decrypt(toDecrypt);
 					Array.Resize<byte>(ref decrypted, dataLength);
                     decrypted = Xor(decrypted, initVector);
+                    Array.Copy(toDecrypt, initVector, KeyLength);
 					decryptedData.AddRange(decrypted);
 					partToDecrypt.Clear();
 				}
