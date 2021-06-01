@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using Force.Crc32;
 
 namespace EmediaWPF
 {
@@ -91,10 +92,9 @@ namespace EmediaWPF
 			writer.Close();
 		}
 
-		public void EncryptAndSave(string path, string fileName)
+		public void Encrypt()
 		{
 			EncryptIDAT();
-			Save(path, fileName);
 		}
 
 		public void Decrypt()
@@ -110,7 +110,7 @@ namespace EmediaWPF
 			foreach (var chunk in idats)
 			{
 				idataLengths.Add(chunk.length);
-				chunk.data = DataEncryption.Instance.EncryptData(chunk.data);
+				chunk.data = DataEncryption.Instance.EncryptDataECB(chunk.data);
 				chunk.length = (uint)chunk.data.Length;
 			}
 
@@ -127,7 +127,7 @@ namespace EmediaWPF
 			int i = 0;
 			foreach (var chunk in idats)
 			{
-				chunk.data = DataEncryption.Instance.DecryptData(chunk.data);
+				chunk.data = DataEncryption.Instance.DecryptDataECB(chunk.data);
 				Array.Resize<byte>(ref chunk.data, (int)idataLength[i]);
 				chunk.length = (uint)chunk.data.Length;
 				++i;
@@ -161,6 +161,24 @@ namespace EmediaWPF
 				}
 				b.Save(@"PodgladZaszyfrowegoPliku.png", ImageFormat.Png);
 			}
+        }
+
+		internal void Rewrite2()
+        {
+			List<Chunk> idats = GetIDATChunks();
+			var tEXt = chunks.Last((c) => c is iTXt) as iTXt;
+			List<uint> idataLength = new List<uint>(tEXt.Text.Split(",").Select((l) => uint.Parse(l)));
+
+			int i = 0;
+			foreach (var chunk in idats)
+			{
+				Array.Resize<byte>(ref chunk.data, (int)idataLength[i]);
+				chunk.length = (uint)chunk.data.Length;
+				chunk.crc = CheckCrc32(chunk);
+				++i;
+			}
+
+			chunks.Remove(tEXt);
         }
 
 		private void AssertPng()
@@ -234,36 +252,14 @@ namespace EmediaWPF
 			return DataReader.ReadUint32(fileReader.ReadBytes(4));
 		}
 
-		static uint[] crcTable;
-
-		// Stores a running CRC (initialized with the CRC of "IDAT" string). When
-		// you write this to the PNG, write as a big-endian value
-		static uint idatCrc;
-
-		// Call this function with the compressed image bytes,
-		// passing in idatCrc as the last parameter
-		private static uint Crc32(byte[] stream, int offset, int length, uint crc)
+		private byte[] CheckCrc32(Chunk chunk)
 		{
-			uint c;
-			if(crcTable==null){
-				crcTable=new uint[256];
-				for(uint n=0;n<=255;n++){
-					c = n;
-					for(var k=0;k<=7;k++){
-						if((c & 1) == 1)
-							c = 0xEDB88320^((c>>1)&0x7FFFFFFF);
-						else
-							c = ((c>>1)&0x7FFFFFFF);
-					}
-					crcTable[n] = c;
-				}
-			}
-			c = crc^0xffffffff;
-			var endOffset=offset+length;
-			for(var i=offset;i<endOffset;i++){
-				c = crcTable[(c^stream[i]) & 255]^((c>>8)&0xFFFFFF);
-			}
-			return c^0xffffffff;
+			var inputArray = new byte[chunk.type.Length + chunk.data.Length];
+			Array.Copy(chunk.type.Select((c) => (byte)c).ToArray(), inputArray, chunk.type.Length);
+			Array.Copy(chunk.data, 0, inputArray, chunk.type.Length, chunk.data.Length);
+			var crc32 = Crc32Algorithm.Compute(inputArray);
+
+			return BitConverter.GetBytes(crc32).Reverse().ToArray();
 		}
 	}
 }

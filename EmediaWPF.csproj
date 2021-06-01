@@ -11,6 +11,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="AForge.Imaging" Version="2.2.5" />
+	  <PackageReference Include="Crc32.NET" Version="1.2.0" />
 	  <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
 	</ItemGroup>
 

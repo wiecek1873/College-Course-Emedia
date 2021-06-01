@@ -45,12 +45,14 @@ namespace EmediaWPF
 				{
 					Console.Clear();
 					png.PrintChunks();
-					png.EncryptAndSave("", "test.png");
+					png.Encrypt();
+                    png.Save("", "test.png");
 					var xd = new PngParser("test.png");
                     xd.Decrypt();
                     xd.Save("", "PoDeszyfr.png");
 					var view = new PngParser("test.png");
                     view.Rewrite();
+                    view.Rewrite2();
                     view.Save("", "Zaszyfrowany.png");
                 }
 

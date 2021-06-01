@@ -89,7 +89,7 @@ namespace EmediaWPF
             d = ExtendedEuclideanAlgorithm(e, totient);
         }
 
-        public byte[] EncryptData(byte[] chunkData)
+        public byte[] EncryptDataECB(byte[] chunkData)
         {
             int dataLength = KeyLength - 1;
             List<byte> partToEncrypt = new List<byte>();
@@ -118,7 +118,7 @@ namespace EmediaWPF
             return encryptedData.ToArray();
         }
 
-		public byte[] DecryptData(byte[] chunkData)
+		public byte[] DecryptDataECB(byte[] chunkData)
 		{
 			int dataLength = KeyLength - 1;
 			List<byte> partToDecrypt = new List<byte>();
@@ -153,8 +153,8 @@ namespace EmediaWPF
 				{
 					// DataEncryption dataEncryption = new DataEncryption();
 					byte[] data = randomNumberGenerator.GenerateRandomBytes(rng.Next(1000, 10000));
-					byte[] enc = EncryptData(data);
-					byte[] dec = DecryptData(enc);
+					byte[] enc = EncryptDataECB(data);
+					byte[] dec = DecryptDataECB(enc);
 
 					if (!Comparer(data, dec))
 					{
